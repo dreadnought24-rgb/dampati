@@ -12,6 +12,7 @@ const DOMINO_PIECE_SCENE := preload("res://domino_piece.tscn")
 const FALL_STEP_DELAY := 0.15  # jeda tiap kartu turun 1 baris (detik), bisa disesuaikan
 
 @onready var score_label: Label = $CanvasLayer/Label
+@onready var round_label: Label = $CanvasLayer/RoundLabel
 @onready var game_over_layer: CanvasLayer = $GameOverLayer
 @onready var game_over_label: Label = $GameOverLayer/Label
 
@@ -25,6 +26,8 @@ var current_piece: Node2D = null
 var current_col: int = 0
 var current_row: int = 0
 var current_offset: Vector2i = Vector2i(0, 1)
+var current_stage: int = 1   # 1 sampai 6
+var current_round: int = 1   # 1 sampai 4 (per babak)
 
 func _ready() -> void:
 	print("Grid siap: ", GRID_COLS, "x", GRID_ROWS)
@@ -32,6 +35,7 @@ func _ready() -> void:
 	build_deck()
 	spawn_piece()
 	update_score_label()
+	update_round_label()
 
 func init_grid_data() -> void:
 	grid_data.clear()
@@ -363,12 +367,17 @@ func restart_game() -> void:
 		current_piece = null
 
 	score = 0
+	current_stage = 1
+	current_round = 1
 	update_score_label()
 	init_grid_data()
 	build_deck()
 	game_over_layer.visible = false
 	set_process(true)
 	$Timer.start()
+	build_deck()
+	update_round_label()
+	game_over_layer.visible = false
 	spawn_piece()
 
 func _draw() -> void:
@@ -394,8 +403,57 @@ func build_deck() -> void:
 	deck.shuffle()
 	
 func win_game() -> void:
-	print("MENANG! Semua domino habis. Skor akhir: ", score)
+	var limit = get_round_score_limit()
+	if score >= limit:
+		advance_round()
+	else:
+		fail_round()
+
+func get_round_score_limit() -> int:
+	var global_round = (current_stage - 1) * 4 + current_round
+	return global_round * 100
+	
+func advance_round() -> void:
+	print("Ronde lolos! Skor: ", score, " / Limit: ", get_round_score_limit())
+
+	if is_boss_round():
+		print("[Placeholder] Ini seharusnya boss battle, tapi belum diimplementasi. Lanjut normal dulu.")
+		# TODO: nanti panggil fungsi boss battle di sini, sebelum lanjut ke ronde berikutnya
+
+	current_round += 1
+	if current_round > 4:
+		current_round = 1
+		current_stage += 1
+
+	if current_stage > 6:
+		win_all_stages()
+		return
+
+	for row in range(GRID_ROWS):
+		for col in range(GRID_COLS):
+			if grid_nodes[row][col] != null:
+				grid_nodes[row][col].queue_free()
+	init_grid_data()
+	build_deck()
+	update_round_label()
+	spawn_piece()
+	
+func fail_round() -> void:
+	print("GAGAL! Skor: ", score, " tidak mencapai limit ", get_round_score_limit())
 	$Timer.stop()
 	set_process(false)
-	game_over_label.text = "Menang!\nSemua domino habis\nSkor: " + str(score)
+	game_over_label.text = "Gagal di Babak " + str(current_stage) + " Ronde " + str(current_round) + "\nSkor: " + str(score) + " / Limit: " + str(get_round_score_limit())
 	game_over_layer.visible = true
+	
+func win_all_stages() -> void:
+	print("SEMUA BABAK SELESAI! Skor akhir: ", score)
+	$Timer.stop()
+	set_process(false)
+	game_over_label.text = "Semua Babak Selesai!\nSkor Akhir: " + str(score)
+	game_over_layer.visible = true
+	
+func update_round_label() -> void:
+	round_label.text = "Babak " + str(current_stage) + " - Ronde " + str(current_round) + "\nTarget: " + str(get_round_score_limit())
+	
+func is_boss_round() -> bool:
+	return current_round == 4
