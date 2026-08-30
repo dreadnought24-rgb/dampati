@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://ec46se8b7yjv"]
+
+[ext_resource type="Script" uid="uid://c8d7o1pdq8cyy" path="res://domino_card.gd" id="1_h6no2"]
+[ext_resource type="Texture2D" uid="uid://h4ri54vjydii" path="res://assets/sprites/l0_sprite_5.png" id="2_h6no2"]
+
+[node name="DominoCard" type="Node2D" unique_id=462459361]
+script = ExtResource("1_h6no2")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=561126800]
+texture = ExtResource("2_h6no2")
+centered = false

@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://umwyptcpis4j"]
+
+[ext_resource type="Script" uid="uid://dlc3spxp0mn18" path="res://domino_piece.gd" id="1_mnp5s"]
+
+[node name="DominoPiece" type="Node2D" unique_id=1610731582]
+script = ExtResource("1_mnp5s")
+
+[node name="CellA" type="Sprite2D" parent="." unique_id=1856140426]
+centered = false
+
+[node name="CellB" type="Sprite2D" parent="." unique_id=1478502383]
+position = Vector2(0, 0.32)
+centered = false
