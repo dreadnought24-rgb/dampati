@@ -1,9 +1,20 @@
 [gd_scene format=3 uid="uid://c6woh4xrtrjkq"]
 
 [ext_resource type="Script" uid="uid://8e5oipvj11g7" path="res://main.gd" id="1_ig7tw"]
+[ext_resource type="Texture2D" uid="uid://d1n7xfy5p8g6h" path="res://assets/bg_file/bg_u.png" id="2_0xm2m"]
+[ext_resource type="Texture2D" uid="uid://sfhvslohlt2y" path="res://assets/sprites/l0_sprite_1.png" id="3_h2yge"]
 
 [node name="main" type="Node2D" unique_id=2117175078]
 script = ExtResource("1_ig7tw")
+
+[node name="ArenaBackground" type="Sprite2D" parent="." unique_id=27152710]
+texture = ExtResource("2_0xm2m")
+centered = false
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1380302716]
+position = Vector2(430, 47.5)
+scale = Vector2(4.4375, 2.34375)
+texture = ExtResource("3_h2yge")
 
 [node name="Timer" type="Timer" parent="." unique_id=2030278574]
 autostart = true
@@ -11,42 +22,79 @@ autostart = true
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1855453903]
 
 [node name="Label" type="Label" parent="CanvasLayer" unique_id=1467084184]
-offset_left = 150.0
-offset_top = 10.0
-offset_right = 211.0
-offset_bottom = 33.0
+offset_left = 70.0
+offset_top = 117.0
+offset_right = 85.0
+offset_bottom = 145.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 20
-text = "Score: 0"
+text = "0"
 
 [node name="RoundLabel" type="Label" parent="CanvasLayer" unique_id=313877286]
-offset_left = 151.0
-offset_top = 37.0
-offset_right = 289.0
-offset_bottom = 60.0
+offset_left = 27.0
+offset_top = 42.0
+offset_right = 153.0
+offset_bottom = 65.0
 theme_override_font_sizes/font_size = 14
 text = "Babak 1 - Ronde 1"
+
+[node name="koin" type="Label" parent="CanvasLayer" unique_id=1785471678]
+offset_left = 121.0
+offset_top = 257.0
+offset_right = 161.0
+offset_bottom = 280.0
+text = "0"
+
+[node name="game score\\" type="Label" parent="CanvasLayer" unique_id=22168794]
+offset_left = 29.0
+offset_top = 90.0
+offset_right = 122.0
+offset_bottom = 113.0
+text = "Game Score"
+
+[node name="Nilai" type="Label" parent="CanvasLayer" unique_id=1797979417]
+offset_left = 41.0
+offset_top = 175.0
+offset_right = 59.0
+offset_bottom = 198.0
+text = "-"
+
+[node name="Match" type="Label" parent="CanvasLayer" unique_id=1690428435]
+offset_left = 116.0
+offset_top = 178.0
+offset_right = 156.0
+offset_bottom = 201.0
+text = "-"
+
+[node name="Hasil" type="Label" parent="CanvasLayer" unique_id=181822838]
+offset_left = 68.0
+offset_top = 215.0
+offset_right = 108.0
+offset_bottom = 238.0
+text = "-"
 
 [node name="GameOverLayer" type="CanvasLayer" parent="." unique_id=1253865483]
 visible = false
 
 [node name="ColorRect" type="ColorRect" parent="GameOverLayer" unique_id=1474317654]
-offset_top = 87.0
-offset_right = 128.0
-offset_bottom = 171.0
+offset_left = 128.0
+offset_top = 95.0
+offset_right = 394.0
+offset_bottom = 263.0
 color = Color(0, 0, 0, 1)
 
 [node name="Label" type="Label" parent="GameOverLayer" unique_id=599294979]
-offset_left = 20.0
-offset_top = 90.0
-offset_right = 107.0
-offset_bottom = 113.0
+offset_left = 218.0
+offset_top = 106.0
+offset_right = 305.0
+offset_bottom = 129.0
 text = "Game Over"
 
 [node name="RestartButton" type="Button" parent="GameOverLayer" unique_id=876818097]
-offset_left = 30.0
-offset_top = 140.0
-offset_right = 95.0
-offset_bottom = 171.0
+offset_left = 231.0
+offset_top = 154.0
+offset_right = 296.0
+offset_bottom = 185.0
 text = "Restart"
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
