@@ -12,19 +12,32 @@ const DOMINO_PIECE_SCENE := preload("res://domino_piece.tscn")
 const FALL_STEP_DELAY := 0.15  # jeda tiap kartu turun 1 baris (detik), bisa disesuaikan
 
 @onready var score_label: Label = $CanvasLayer/Label
+@onready var round_label: Label = $CanvasLayer/RoundLabel
 @onready var game_over_layer: CanvasLayer = $GameOverLayer
 @onready var game_over_label: Label = $GameOverLayer/Label
+#@onready var nilai_label: Label = $CanvasLayer/NilaiLabel
+#@onready var match_label: Label = $CanvasLayer/MatchLabel
+#@onready var hasil_label: Label = $CanvasLayer/HasilLabel
+@onready var limit_score_label: Label = $CanvasLayer/LimitScore
+@onready var next_piece_container: Node2D = $CanvasLayer/NextPieceContainer
 
 var grid_data: Array = []
 var grid_nodes: Array = []
 var grid_partner: Array = []
 var deck: Array = []
 var score: int = 0
+var combo_multiplier: int = 1   # ganti dari chain_value_streak dictionary
 
 var current_piece: Node2D = null
 var current_col: int = 0
 var current_row: int = 0
 var current_offset: Vector2i = Vector2i(0, 1)
+var current_stage: int = 1   # 1 sampai 6
+var current_round: int = 1   # 1 sampai 4 (per babak)
+
+var next_piece_data: Vector2i = Vector2i(-1, -1)
+var next_piece_offset: Vector2i = Vector2i(0, 1)
+var next_piece_preview_node: Node2D = null
 
 func _ready() -> void:
 	print("Grid siap: ", GRID_COLS, "x", GRID_ROWS)
@@ -32,6 +45,7 @@ func _ready() -> void:
 	build_deck()
 	spawn_piece()
 	update_score_label()
+	update_round_label()
 
 func init_grid_data() -> void:
 	grid_data.clear()
@@ -50,16 +64,22 @@ func init_grid_data() -> void:
 		grid_partner.append(row_partner)
 
 func grid_to_pixel(col: int, row: int) -> Vector2:
-	return Vector2(col * CELL_SIZE, row * CELL_SIZE)
+	return Vector2(
+		col * CELL_SIZE + 192,
+		row * CELL_SIZE + 32
+	)
 
 func get_cell_b_pos(col: int, row: int, offset: Vector2i) -> Vector2i:
 	return Vector2i(col + offset.x, row + offset.y)
 
 func spawn_piece() -> void:
-	if deck.size() == 0:
-		win_game()
-		return
+	if next_piece_data == Vector2i(-1, -1):
+		prepare_next_piece()
+		if next_piece_data == Vector2i(-1, -1):
+			win_game()
+			return
 
+	# --- ACAK ORIENTASI SAAT MASUK ARENA ---
 	current_offset = Vector2i(0, 1) if randi() % 2 == 0 else Vector2i(1, 0)
 
 	if current_offset.x == 1:
@@ -74,19 +94,25 @@ func spawn_piece() -> void:
 		game_over()
 		return
 
-	var domino = deck.pop_back()
-	var val_a = domino.x
-	var val_b = domino.y
-	if randi() % 2 == 0:
-		var temp = val_a
-		val_a = val_b
-		val_b = temp
+	# Pindahkan node dari Next Card ke Arena
+	if next_piece_preview_node != null:
+		current_piece = next_piece_preview_node
+		next_piece_container.remove_child(current_piece)
+		add_child(current_piece)
+		next_piece_preview_node = null
+		
+		# --- UPDATE ORIENTASI KARTU SESUAI HASIL ACAKAN ARENA ---
+		current_piece.set_cell_b_offset(current_offset)
+	else:
+		current_piece = DOMINO_PIECE_SCENE.instantiate()
+		add_child(current_piece)
+		current_piece.set_cell_b_offset(current_offset)
+		current_piece.set_values(next_piece_data.x, next_piece_data.y)
 
-	current_piece = DOMINO_PIECE_SCENE.instantiate()
-	add_child(current_piece)
-	current_piece.set_cell_b_offset(current_offset)
-	current_piece.set_values(val_a, val_b)
 	current_piece.position = grid_to_pixel(current_col, current_row)
+
+	# Siapkan kartu berikutnya untuk UI Next Piece
+	prepare_next_piece()
 	
 func can_move_to(new_col: int, new_row: int) -> bool:
 	if new_col < 0 or new_col >= GRID_COLS or new_row < 0 or new_row >= GRID_ROWS:
@@ -157,6 +183,8 @@ func hard_drop() -> void:
 	$Timer.start()
 
 func land_piece() -> void:
+	combo_multiplier = 1
+	
 	var cell_b = get_cell_b_pos(current_col, current_row, current_offset)
 	var value_a = current_piece.value_a
 	var value_b = current_piece.value_b
@@ -185,7 +213,6 @@ func place_card(row: int, col: int, value: int, partner_pos: Vector2i = NO_PARTN
 func check_matches() -> bool:
 	var visited := {}
 	var groups := []
-
 	for row in range(GRID_ROWS):
 		for col in range(GRID_COLS):
 			var pos = Vector2i(col, row)
@@ -197,11 +224,9 @@ func check_matches() -> bool:
 				groups.append(group)
 
 	var found_match = false
-
 	for group in groups:
 		var p_first = group[0]
 		var domino_value = grid_data[p_first.y][p_first.x]
-
 		if group.size() == 2:
 			var p1 = group[0]
 			var p2 = group[1]
@@ -210,12 +235,14 @@ func check_matches() -> bool:
 
 		for pos in group:
 			remove_card(pos.y, pos.x)
-
-		var earned = domino_value * group.size()
+		var earned = domino_value * group.size() * combo_multiplier
 		score += earned
 		update_score_label()
 		found_match = true
-		print("Match ", group.size(), " kartu nilai ", domino_value, " = +", earned, " poin. Total: ", score)
+		print("Match ", group.size(), " kartu nilai ", domino_value, " x", combo_multiplier, " combo = +", earned, " poin. Total: ", score)
+
+	if found_match:
+		combo_multiplier += 1   # naikkan combo untuk wave berikutnya (kalau ada chain lanjutan)
 
 	return found_match
 
@@ -353,38 +380,32 @@ func _on_restart_button_pressed() -> void:
 	restart_game()
 
 func restart_game() -> void:
-	for row in range(GRID_ROWS):
-		for col in range(GRID_COLS):
-			if grid_nodes[row][col] != null:
-				grid_nodes[row][col].queue_free()
+	# ... (kode pembersihan kartu & grid lama Anda)
 
-	if current_piece != null:
-		current_piece.queue_free()
-		current_piece = null
+	if next_piece_preview_node != null:
+		next_piece_preview_node.queue_free()
+		next_piece_preview_node = null
 
-	score = 0
-	update_score_label()
-	init_grid_data()
-	build_deck()
-	game_over_layer.visible = false
-	set_process(true)
-	$Timer.start()
-	spawn_piece()
+	next_piece_data = Vector2i(-1, -1)
 
-func _draw() -> void:
-	var spawn_color = Color(0.2, 0.2, 0.4, 0.5)
-	draw_rect(Rect2(0, 0, GRID_COLS * CELL_SIZE, SPAWN_ROWS * CELL_SIZE), spawn_color)
+	# ... (lanjutan reset score, init_grid_data, build_deck)
+	
+	spawn_piece() # Ini otomatis akan mengisi arena dan menyiapkan next piece baru
 
-	for col in range(GRID_COLS + 1):
-		var x = col * CELL_SIZE
-		draw_line(Vector2(x, 0), Vector2(x, GRID_ROWS * CELL_SIZE), Color.CYAN, 1.0)
-
-	for row in range(GRID_ROWS + 1):
-		var y = row * CELL_SIZE
-		draw_line(Vector2(0, y), Vector2(GRID_COLS * CELL_SIZE, y), Color.CYAN, 1.0)
+#func _draw() -> void:
+	#var spawn_color = Color(0.2, 0.2, 0.4, 0.5)
+	#draw_rect(Rect2(0, 0, GRID_COLS * CELL_SIZE, SPAWN_ROWS * CELL_SIZE), spawn_color)
+#
+	#for col in range(GRID_COLS + 1):
+		#var x = col * CELL_SIZE
+		#draw_line(Vector2(x, 0), Vector2(x, GRID_ROWS * CELL_SIZE), Color.CYAN, 1.0)
+#
+	#for row in range(GRID_ROWS + 1):
+		#var y = row * CELL_SIZE
+		#draw_line(Vector2(0, y), Vector2(GRID_COLS * CELL_SIZE, y), Color.CYAN, 1.0)
 
 func update_score_label() -> void:
-	score_label.text = "Score: " + str(score)
+	score_label.text = str(score)
 	
 func build_deck() -> void:
 	deck.clear()
@@ -394,8 +415,90 @@ func build_deck() -> void:
 	deck.shuffle()
 	
 func win_game() -> void:
-	print("MENANG! Semua domino habis. Skor akhir: ", score)
+	var limit = get_round_score_limit()
+	if score >= limit:
+		advance_round()
+	else:
+		fail_round()
+
+func get_round_score_limit() -> int:
+	var global_round = (current_stage - 1) * 4 + current_round
+	return global_round * 100
+	
+func advance_round() -> void:
+	print("Ronde lolos! Skor: ", score, " / Limit: ", get_round_score_limit())
+
+	if is_boss_round():
+		print("[Placeholder] Ini seharusnya boss battle, tapi belum diimplementasi. Lanjut normal dulu.")
+		# TODO: nanti panggil fungsi boss battle di sini, sebelum lanjut ke ronde berikutnya
+
+	current_round += 1
+	if current_round > 4:
+		current_round = 1
+		current_stage += 1
+
+	if current_stage > 6:
+		win_all_stages()
+		return
+
+	for row in range(GRID_ROWS):
+		for col in range(GRID_COLS):
+			if grid_nodes[row][col] != null:
+				grid_nodes[row][col].queue_free()
+	init_grid_data()
+	build_deck()
+	update_round_label()
+	spawn_piece()
+	
+func fail_round() -> void:
+	print("GAGAL! Skor: ", score, " tidak mencapai limit ", get_round_score_limit())
 	$Timer.stop()
 	set_process(false)
-	game_over_label.text = "Menang!\nSemua domino habis\nSkor: " + str(score)
+	game_over_label.text = "Gagal di Babak " + str(current_stage) + " Ronde " + str(current_round) + "\nSkor: " + str(score) + " / Limit: " + str(get_round_score_limit())
 	game_over_layer.visible = true
+	
+func win_all_stages() -> void:
+	print("SEMUA BABAK SELESAI! Skor akhir: ", score)
+	$Timer.stop()
+	set_process(false)
+	game_over_label.text = "Semua Babak Selesai!\nSkor Akhir: " + str(score)
+	game_over_layer.visible = true
+	
+func update_round_label() -> void:
+	# Label Ronde hanya menampilkan Babak & Ronde
+	round_label.text = "Babak " + str(current_stage) + " - Ronde " + str(current_round)
+	
+	# Label LimitScore hanya menampilkan Target Poin
+	if limit_score_label:
+		limit_score_label.text = str(get_round_score_limit())
+	
+func is_boss_round() -> bool:
+	return current_round == 4
+	
+func prepare_next_piece() -> void:
+	if deck.size() == 0:
+		next_piece_data = Vector2i(-1, -1)
+		return
+
+	# Hapus visual preview lama jika ada
+	if next_piece_preview_node != null:
+		next_piece_preview_node.queue_free()
+		next_piece_preview_node = null
+
+	# 1. Ambil data domino dari deck
+	var domino = deck.pop_back()
+	var val_a = domino.x
+	var val_b = domino.y
+	if randi() % 2 == 0:
+		var temp = val_a
+		val_a = val_b
+		val_b = temp
+
+	next_piece_data = Vector2i(val_a, val_b)
+	next_piece_offset = Vector2i(0, 1)
+
+	next_piece_preview_node = DOMINO_PIECE_SCENE.instantiate()
+	next_piece_container.add_child(next_piece_preview_node)
+	next_piece_preview_node.set_cell_b_offset(next_piece_offset)
+	next_piece_preview_node.set_values(val_a, val_b)
+	next_piece_preview_node.position = Vector2.ZERO
