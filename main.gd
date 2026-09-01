@@ -15,6 +15,9 @@ const FALL_STEP_DELAY := 0.15  # jeda tiap kartu turun 1 baris (detik), bisa dis
 @onready var round_label: Label = $CanvasLayer/RoundLabel
 @onready var game_over_layer: CanvasLayer = $GameOverLayer
 @onready var game_over_label: Label = $GameOverLayer/Label
+@onready var nilai_label: Label = $CanvasLayer/NilaiLabel
+@onready var match_label: Label = $CanvasLayer/MatchLabel
+@onready var hasil_label: Label = $CanvasLayer/HasilLabel
 
 var grid_data: Array = []
 var grid_nodes: Array = []
@@ -55,7 +58,10 @@ func init_grid_data() -> void:
 		grid_partner.append(row_partner)
 
 func grid_to_pixel(col: int, row: int) -> Vector2:
-	return Vector2(col * CELL_SIZE, row * CELL_SIZE)
+	return Vector2(
+		col * CELL_SIZE + 192,
+		row * CELL_SIZE + 32
+	)
 
 func get_cell_b_pos(col: int, row: int, offset: Vector2i) -> Vector2i:
 	return Vector2i(col + offset.x, row + offset.y)
@@ -382,20 +388,20 @@ func restart_game() -> void:
 	game_over_layer.visible = false
 	spawn_piece()
 
-func _draw() -> void:
-	var spawn_color = Color(0.2, 0.2, 0.4, 0.5)
-	draw_rect(Rect2(0, 0, GRID_COLS * CELL_SIZE, SPAWN_ROWS * CELL_SIZE), spawn_color)
-
-	for col in range(GRID_COLS + 1):
-		var x = col * CELL_SIZE
-		draw_line(Vector2(x, 0), Vector2(x, GRID_ROWS * CELL_SIZE), Color.CYAN, 1.0)
-
-	for row in range(GRID_ROWS + 1):
-		var y = row * CELL_SIZE
-		draw_line(Vector2(0, y), Vector2(GRID_COLS * CELL_SIZE, y), Color.CYAN, 1.0)
+#func _draw() -> void:
+	#var spawn_color = Color(0.2, 0.2, 0.4, 0.5)
+	#draw_rect(Rect2(0, 0, GRID_COLS * CELL_SIZE, SPAWN_ROWS * CELL_SIZE), spawn_color)
+#
+	#for col in range(GRID_COLS + 1):
+		#var x = col * CELL_SIZE
+		#draw_line(Vector2(x, 0), Vector2(x, GRID_ROWS * CELL_SIZE), Color.CYAN, 1.0)
+#
+	#for row in range(GRID_ROWS + 1):
+		#var y = row * CELL_SIZE
+		#draw_line(Vector2(0, y), Vector2(GRID_COLS * CELL_SIZE, y), Color.CYAN, 1.0)
 
 func update_score_label() -> void:
-	score_label.text = "Score: " + str(score)
+	score_label.text = str(score)
 	
 func build_deck() -> void:
 	deck.clear()
