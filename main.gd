@@ -30,6 +30,7 @@ var grid_nodes: Array = []
 var grid_partner: Array = []
 var deck: Array = []
 var score: int = 0
+var combo_multiplier: int = 1   # ganti dari chain_value_streak dictionary
 
 var current_piece: Node2D = null
 var current_col: int = 0
@@ -195,6 +196,8 @@ func hard_drop() -> void:
 	$Timer.start()
 
 func land_piece() -> void:
+	combo_multiplier = 1
+	
 	var cell_b = get_cell_b_pos(current_col, current_row, current_offset)
 	var value_a = current_piece.value_a
 	var value_b = current_piece.value_b
@@ -229,7 +232,6 @@ func place_card(row: int, col: int, value: int, partner_pos: Vector2i = NO_PARTN
 func check_matches() -> bool:
 	var visited := {}
 	var groups := []
-
 	for row in range(GRID_ROWS):
 		for col in range(GRID_COLS):
 			var pos = Vector2i(col, row)
@@ -241,11 +243,9 @@ func check_matches() -> bool:
 				groups.append(group)
 
 	var found_match = false
-
 	for group in groups:
 		var p_first = group[0]
 		var domino_value = grid_data[p_first.y][p_first.x]
-
 		if group.size() == 2:
 			var p1 = group[0]
 			var p2 = group[1]
@@ -332,6 +332,15 @@ func check_matches() -> bool:
 			#update_score_label()
 			#found_match = true
 			#print("Match! Total ", valid_tiles_count, " kartu hancur (Base: ", total_base_earned, ") | Final +", total_final_earned, " poin. Total Skor: ", score)
+			remove_card(pos.y, pos.x)
+		var earned = domino_value * group.size() * combo_multiplier
+		score += earned
+		update_score_label()
+		found_match = true
+		print("Match ", group.size(), " kartu nilai ", domino_value, " x", combo_multiplier, " combo = +", earned, " poin. Total: ", score)
+
+	if found_match:
+		combo_multiplier += 1   # naikkan combo untuk wave berikutnya (kalau ada chain lanjutan)
 
 	return found_match
 
