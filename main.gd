@@ -332,12 +332,13 @@ func check_matches() -> bool:
 			#update_score_label()
 			#found_match = true
 			#print("Match! Total ", valid_tiles_count, " kartu hancur (Base: ", total_base_earned, ") | Final +", total_final_earned, " poin. Total Skor: ", score)
-			remove_card(pos.y, pos.x)
-		var earned = domino_value * group.size() * combo_multiplier
-		score += earned
-		update_score_label()
-		found_match = true
-		print("Match ", group.size(), " kartu nilai ", domino_value, " x", combo_multiplier, " combo = +", earned, " poin. Total: ", score)
+			
+			#remove_card(pos.y, pos.x)
+		#var earned = domino_value * group.size() * combo_multiplier
+		#score += earned
+		#update_score_label()
+		#found_match = true
+		#print("Match ", group.size(), " kartu nilai ", domino_value, " x", combo_multiplier, " combo = +", earned, " poin. Total: ", score)
 
 	if found_match:
 		combo_multiplier += 1   # naikkan combo untuk wave berikutnya (kalau ada chain lanjutan)
