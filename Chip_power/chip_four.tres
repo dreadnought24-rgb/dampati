@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ChipData" format=3 uid="uid://b7p1t4dweltv1"]
+
+[ext_resource type="Script" uid="uid://bwcre02q336mo" path="res://ChipData.gd" id="1_10v0e"]
+
+[resource]
+script = ExtResource("1_10v0e")
+chip_id = "chip_four"
+chip_name = "Four"
+bonus_mult_plus = 4.0
+target_tile_value = 4
+metadata/_custom_type_script = "uid://bwcre02q336mo"

@@ -29,7 +29,7 @@ var grid_data: Array = []
 var grid_nodes: Array = []
 var grid_partner: Array = []
 var deck: Array = []
-var score: int = 0
+var score: float = 0.0
 var combo_multiplier: int = 1   # ganti dari chain_value_streak dictionary
 
 var current_piece: Node2D = null
@@ -50,12 +50,17 @@ func _ready() -> void:
 	update_round_label()
 	update_score_label()
 
-	# --- LOAD TES CHIP POWER (ZERO) ---
-	var zero_chip = load("res://chip_power/chip_zero.tres") # Sesuaikan path folder jika beda
-	if zero_chip:
-		chip_manager.add_chip(zero_chip)
+	# 1. Load Chip Zero
+	#var zero_chip = load("res://chip_power/chip_zero.tres")
+	#if zero_chip:
+		#chip_manager.add_chip(zero_chip)
 
-	# TAMPILKAN CHIP KE UI
+	# 2. Load Chip One
+	var one_chip = load("res://chip_power/chip_balak.tres") # Sesuaikan nama file .tres kamu
+	if one_chip:
+		chip_manager.add_chip(one_chip)
+
+	# 3. Tampilkan seluruh chip yang terpasang ke UI
 	render_chip_slots()
 
 	spawn_piece()
@@ -252,7 +257,7 @@ func check_matches() -> bool:
 			if grid_partner[p1.y][p1.x] == p2:
 				continue
 
-# --- 1. Tentukan Posisi Yang Akan Dihapus ---
+		# --- 1. Tentukan Posisi Yang Akan Dihapus ---
 		var tiles_to_remove: Array[Vector2i] = []
 		for pos in group:
 			if not tiles_to_remove.has(pos):
@@ -270,41 +275,54 @@ func check_matches() -> bool:
 					# Tambah Baris (Kiri-Kanan)
 					for target_col in range(GRID_COLS):
 						var target_pos = Vector2i(target_col, pos.y)
-						# HANYA masukkan jika ada kartunya (grid_data != -1)
 						if grid_data[pos.y][target_col] != -1 and not tiles_to_remove.has(target_pos):
 							tiles_to_remove.append(target_pos)
 
 					# Tambah Kolom (Atas-Bawah)
 					for target_row in range(GRID_ROWS):
 						var target_pos = Vector2i(pos.x, target_row)
-						# HANYA masukkan jika ada kartunya (grid_data != -1)
 						if grid_data[target_row][pos.x] != -1 and not tiles_to_remove.has(target_pos):
 							tiles_to_remove.append(target_pos)
-# --- 3. Hitung Total Skor Seluruh Kartu Yang Hancur Dalam 1 Match ---
+
+		# --- 3. Hitung Total Skor Seluruh Kartu Yang Hancur Dalam 1 Match ---
 		var total_base_earned: int = 0
 		var valid_tiles_count: int = 0
 
-		# Hitung total base score dari semua kartu yang hancur
 		for pos in tiles_to_remove:
 			var tile_val = grid_data[pos.y][pos.x]
 			if tile_val >= 0:
 				total_base_earned += tile_val
 				valid_tiles_count += 1
 
-		# HANYA PROSES SKOR JIKA ADA KARTU VALID YANG HANCUR
 		if valid_tiles_count > 0:
-			# Kalkulasi Chip dikalkulasikan HANYA 1 KALI untuk grup match ini!
-			# Kita kirim domino_value (angka yang cocok, misal: 0) sebagai penentu pemicu chip.
-			var final_earned = chip_manager.calculate_final_score(total_base_earned, tiles_to_remove, domino_value)
+			# --- DETEKSI KARTU BALAK (DOUBLE) ---
+			var is_double_match: bool = false
+			for pos in group:
+				var partner_pos = grid_partner[pos.y][pos.x]
+				if partner_pos != Vector2i(-1, -1):
+					var partner_val = grid_data[partner_pos.y][partner_pos.x]
+					# Jika nilai sisi partner sama dengan nilai match (domino_value) -> Kartu Balak!
+					if partner_val == domino_value:
+						is_double_match = true
+						break
+						
+
+
+			# Hitung skor murni dari ChipManager dengan menyertakan status balak
+			var final_earned: float = chip_manager.calculate_final_score(total_base_earned, tiles_to_remove, domino_value, is_double_match)
+			
+			# Tambahkan LANGSUNG ke score
 			score += final_earned
 
-			# --- 4. Eksekusi Penghapusan Kartu ---
 			for pos in tiles_to_remove:
 				remove_card(pos.y, pos.x)
 
 			update_score_label()
 			found_match = true
-			print("Match! Total ", valid_tiles_count, " kartu hancur (Match Nilai: ", domino_value, " | Base Total: ", total_base_earned, ") -> Final: +", final_earned, " poin. Total Skor: ", score)
+			
+			print("DEBUG MATCH: Base=", total_base_earned, " | Is Double=", is_double_match, " | Final Earned=", final_earned, " | Score Sekarang=", score)
+
+	return found_match
 ## --- 3. Hitung Total Skor & Kalkulasi Chip Seluruh Kartu Yang Hancur ---
 		#var total_base_earned: int = 0
 		#var total_final_earned: int = 0
@@ -340,10 +358,10 @@ func check_matches() -> bool:
 		#found_match = true
 		#print("Match ", group.size(), " kartu nilai ", domino_value, " x", combo_multiplier, " combo = +", earned, " poin. Total: ", score)
 
-	if found_match:
-		combo_multiplier += 1   # naikkan combo untuk wave berikutnya (kalau ada chain lanjutan)
-
-	return found_match
+	#if found_match:
+		#combo_multiplier += 1   # naikkan combo untuk wave berikutnya (kalau ada chain lanjutan)
+#
+	#return found_match
 
 func flood_fill(start: Vector2i, value: int, visited: Dictionary) -> Array:
 	var stack = [start]
