@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://8hfkqf5jsahp"]
+
+[ext_resource type="Script" uid="uid://2ls6me6t5350" path="res://chip.gd" id="1_ri5qt"]
+
+[node name="chip" type="Node2D" unique_id=1635764078]
+script = ExtResource("1_ri5qt")

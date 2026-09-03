@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://wbiwomvamq3i"]
+
+[ext_resource type="Texture2D" uid="uid://q6nk7xaawbqa" path="res://assets/sprites/chips/TheRedChip.png" id="1_bpm68"]
+[ext_resource type="Script" uid="uid://ce8dgh0q03b1" path="res://chip_slot_ui.gd" id="2_bpbjo"]
+
+[node name="ChipSlotUI" type="TextureButton" unique_id=2026709763]
+offset_right = 32.0
+offset_bottom = 32.0
+texture_normal = ExtResource("1_bpm68")
+script = ExtResource("2_bpbjo")
