@@ -37,6 +37,8 @@ const FALL_STEP_DELAY := 0.15  # jeda tiap kartu turun 1 baris (detik), bisa dis
 
 
 
+@onready var koin_label: Label = $CanvasLayer/koin
+@onready var getkoin_label : Label = $CanvasLayer/GetKoin
 
 var grid_data: Array = []
 var grid_nodes: Array = []
@@ -44,6 +46,8 @@ var grid_partner: Array = []
 var deck: Array = []
 var score: float = 0.0
 var combo_multiplier: int = 1   # ganti dari chain_value_streak dictionary
+var koin: int = 0
+var getkoin: int = 0
 
 var current_piece: Node2D = null
 var current_col: int = 0
@@ -82,7 +86,10 @@ func _ready() -> void:
 	update_round_label()
 	update_score_label()
 	update_limit_score_ui()
-
+	
+	update_limit_score_ui()
+	update_koin_ui()
+	update_getkoin_ui()
 	# 1. Load Chip Zero
 	#var zero_chip = load("res://chip_power/chip_zero.tres")
 	#if zero_chip:
@@ -587,6 +594,7 @@ func restart_game() -> void:
 	game_over_layer.visible = false
 	set_process(true)
 	$Timer.start()
+	update_getkoin_ui()
 	spawn_piece()
 
 #func _draw() -> void:
@@ -603,6 +611,7 @@ func restart_game() -> void:
 
 func update_score_label() -> void:
 	score_label.text = str(score)
+
 	
 func build_deck() -> void:
 	deck.clear()
@@ -625,9 +634,16 @@ func get_round_score_limit() -> int:
 func advance_round() -> void:
 	print("Ronde lolos! Skor: ", score, " / Limit: ", get_round_score_limit())
 
+	# --- TAMBAHKAN KOIN DI SINI ---
+	var reward := get_round_koin_reward()
+	koin += reward
+	getkoin = reward
+	update_koin_ui()
+	print("Dapat koin: +", reward, " | Total koin: ", koin)
+	# ------------------------------
+
 	if is_boss_round():
 		print("[Placeholder] Ini seharusnya boss battle, tapi belum diimplementasi. Lanjut normal dulu.")
-		# TODO: nanti panggil fungsi boss battle di sini, sebelum lanjut ke ronde berikutnya
 
 	current_round += 1
 	if current_round > 4:
@@ -647,6 +663,7 @@ func advance_round() -> void:
 	update_round_label()
 	update_limit_score_ui()
 	reset_total_kartu()
+	update_getkoin_ui()  # update preview untuk ronde berikutnya
 	spawn_piece()
 	
 	
@@ -813,3 +830,21 @@ func _on_resume_pressed() -> void:
 func _on_mainmenu_pressed() -> void:
 	get_tree().paused = false # Wajib unpause agar scene menu tidak ikut membeku
 	get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+# zzz
+# Reward dasar per posisi ronde dalam 1 babak (index 0 = ronde 1, dst; index 3 = ronde 4/boss)
+const ROUND_KOIN_REWARDS := [3, 5, 7, 10]
+
+# Menghitung berapa koin yang akan didapat jika menang ronde SAAT INI
+func get_round_koin_reward() -> int:
+	var base_reward: int = ROUND_KOIN_REWARDS[current_round - 1]
+	var bonus: int = int(koin / 5)  # setiap 5 koin yang dimiliki, +1 gold bonus
+	return base_reward + bonus
+
+func update_koin_ui() -> void:
+	if koin_label:
+		koin_label.text = str(koin)
+
+func update_getkoin_ui() -> void:
+	if getkoin_label:
+		getkoin_label.text = "+" + str(get_round_koin_reward())
+		

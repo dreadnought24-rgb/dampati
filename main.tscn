@@ -116,7 +116,7 @@ size_flags_horizontal = 4
 theme_override_colors/font_color = Color(0.94509804, 0.8156863, 0.007843138, 1)
 theme_override_fonts/font = ExtResource("4_lquwl")
 theme_override_font_sizes/font_size = 9
-text = "20"
+text = "3"
 
 [node name="koin" type="Label" parent="CanvasLayer" unique_id=1785471678]
 offset_left = 357.0
@@ -127,7 +127,7 @@ size_flags_horizontal = 8
 theme_override_colors/font_color = Color(0.94509804, 0.8156863, 0.007843138, 1)
 theme_override_fonts/font = ExtResource("4_lquwl")
 theme_override_font_sizes/font_size = 23
-text = "80"
+text = "0"
 
 [node name="NextPieceContainer" type="Node2D" parent="CanvasLayer" unique_id=1364226525]
 z_as_relative = false
