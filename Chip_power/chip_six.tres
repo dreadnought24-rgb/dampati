@@ -1,11 +1,14 @@
 [gd_resource type="Resource" script_class="ChipData" format=3 uid="uid://b5eavrh0llhdr"]
 
+[ext_resource type="Texture2D" uid="uid://usc0hlr1l5p6" path="res://assets/sprites/chips/Six.png" id="1_fxl35"]
 [ext_resource type="Script" uid="uid://bwcre02q336mo" path="res://ChipData.gd" id="1_owilu"]
 
 [resource]
 script = ExtResource("1_owilu")
 chip_id = "chip_six"
 chip_name = "Six"
+icon = ExtResource("1_fxl35")
+price = 4
 bonus_mult_plus = 6.0
 target_tile_value = 6
 metadata/_custom_type_script = "uid://bwcre02q336mo"

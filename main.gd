@@ -1,4 +1,4 @@
-extends Node2D
+extends Node
 
 const CELL_SIZE := 32
 const GRID_COLS := 4
@@ -29,6 +29,7 @@ const FALL_STEP_DELAY := 0.15  # jeda tiap kartu turun 1 baris (detik), bisa dis
 @onready var base_label: Label = $CanvasLayer/Base  # atau $Base sesuai nama node di Scene Tree
 @onready var koin_label: Label = $CanvasLayer/koin
 @onready var getkoin_label : Label = $CanvasLayer/GetKoin
+@onready var shop_layer: Node = $ShopLayer  # SESUAIKAN path node shop kamu di scene main
 
 var grid_data: Array = []
 var grid_nodes: Array = []
@@ -59,13 +60,33 @@ func _ready() -> void:
 	randomize()
 	init_grid_data()
 	build_deck()
-	update_round_label()
+
 	update_score_label()
-	update_limit_score_ui()
+		# --- SINKRON DARI GAMEDATA ---
+	koin = GameData.koin
+	current_stage = GameData.current_stage
+	current_round = GameData.current_round
+	score = GameData.score
 	
-	update_limit_score_ui()
 	update_koin_ui()
 	update_getkoin_ui()
+	update_round_label()
+	update_limit_score_ui()
+	update_score_label()     # <- refresh limit skor sesuai ronde yang benar
+
+	for chip in GameData.equipped_chips:
+		chip_manager.add_chip(chip)
+	for chip in GameData.equipped_chips:
+		chip_manager.add_chip(chip)
+		
+	# --- SINKRON DARI GAMEDATA ---
+	koin = GameData.koin
+	update_koin_ui()
+	update_getkoin_ui()
+
+	for chip in GameData.equipped_chips:
+		chip_manager.add_chip(chip)
+	# -----------------------------
 	# 1. Load Chip Zero
 	#var zero_chip = load("res://chip_power/chip_zero.tres")
 	#if zero_chip:
@@ -552,6 +573,9 @@ func _on_restart_button_pressed() -> void:
 	#spawn_piece() # Ini otomatis akan mengisi arena dan menyiapkan next piece baru
 	
 func restart_game() -> void:
+	# --- RESET SEMUA DATA PERSISTEN DI GAMEDATA ---
+	GameData.reset_all()
+
 	for row in range(GRID_ROWS):
 		for col in range(GRID_COLS):
 			if grid_nodes[row][col] != null:
@@ -562,9 +586,13 @@ func restart_game() -> void:
 		current_piece = null
 
 	score = 0
+	koin = 0                  # <-- tambahkan ini
+	getkoin = 0                # <-- tambahkan ini juga biar konsisten
 	current_stage = 1
 	current_round = 1
+
 	update_score_label()
+	update_koin_ui()           # <-- tambahkan ini
 	init_grid_data()
 	build_deck()
 	game_over_layer.visible = false
@@ -610,16 +638,14 @@ func get_round_score_limit() -> int:
 func advance_round() -> void:
 	print("Ronde lolos! Skor: ", score, " / Limit: ", get_round_score_limit())
 
-	# --- TAMBAHKAN KOIN DI SINI ---
 	var reward := get_round_koin_reward()
 	koin += reward
 	getkoin = reward
 	update_koin_ui()
 	print("Dapat koin: +", reward, " | Total koin: ", koin)
-	# ------------------------------
 
 	if is_boss_round():
-		print("[Placeholder] Ini seharusnya boss battle, tapi belum diimplementasi. Lanjut normal dulu.")
+		print("[Placeholder] boss battle")
 
 	current_round += 1
 	if current_round > 4:
@@ -630,16 +656,38 @@ func advance_round() -> void:
 		win_all_stages()
 		return
 
+	update_round_label()
+	update_limit_score_ui()
+
+	# --- SIMPAN SEMUA PROGRESS SEBELUM KE SHOP ---
+	GameData.koin = koin
+	GameData.current_stage = current_stage
+	GameData.current_round = current_round
+	GameData.score = score
+	get_tree().change_scene_to_file("res://shop.tscn")
+
+func open_shop() -> void:
+	set_process(false)
+	$Timer.stop()
+	shop_layer.visible = true
+	shop_layer.open_shop(self)   # kirim reference "main" ke shop
+
+# Dipanggil oleh shop.gd saat tombol Next ditekan
+func continue_to_next_round() -> void:
+	shop_layer.visible = false
+
 	for row in range(GRID_ROWS):
 		for col in range(GRID_COLS):
 			if grid_nodes[row][col] != null:
 				grid_nodes[row][col].queue_free()
 	init_grid_data()
 	build_deck()
-	update_round_label()
-	update_limit_score_ui()
 	reset_total_kartu()
-	update_getkoin_ui()  # update preview untuk ronde berikutnya
+	update_getkoin_ui()
+	render_chip_slots()   # refresh biar chip baru dari shop ikut tampil
+
+	set_process(true)
+	$Timer.start()
 	spawn_piece()
 	
 	

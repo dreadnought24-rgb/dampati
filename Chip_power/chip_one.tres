@@ -8,6 +8,7 @@ script = ExtResource("2_ka6ct")
 chip_id = "one_chip"
 chip_name = "One"
 icon = ExtResource("1_7ea0e")
+price = 4
 bonus_mult_plus = 1.0
 target_tile_value = 1
 metadata/_custom_type_script = "uid://bwcre02q336mo"
