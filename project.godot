@@ -11,13 +11,17 @@ config_version=5
 [application]
 
 config/name="Dampati"
+run/main_scene="uid://c6woh4xrtrjkq"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
 [display]
 
-window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"
+window/size/viewport_width=512
+window/size/viewport_height=320
+window/size/window_width_override=1024
+window/size/window_height_override=640
+window/stretch/mode="viewport"
 
 [input]
 

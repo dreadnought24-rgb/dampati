@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ChipData" format=3 uid="uid://d1ppxiqsnsni7"]
+
+[ext_resource type="Texture2D" uid="uid://yrwcpm1rv004" path="res://assets/sprites/chips/One.png" id="1_7ea0e"]
+[ext_resource type="Script" uid="uid://bwcre02q336mo" path="res://ChipData.gd" id="2_ka6ct"]
+
+[resource]
+script = ExtResource("2_ka6ct")
+chip_id = "one_chip"
+chip_name = "One"
+icon = ExtResource("1_7ea0e")
+bonus_mult_plus = 1.0
+target_tile_value = 1
+metadata/_custom_type_script = "uid://bwcre02q336mo"

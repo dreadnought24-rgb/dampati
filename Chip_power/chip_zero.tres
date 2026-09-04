@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ChipData" format=3 uid="uid://cb2galfrbm7fr"]
+
+[ext_resource type="Texture2D" uid="uid://ccokl8wu6yd6e" path="res://assets/sprites/chips/Zero.png" id="1_opshw"]
+[ext_resource type="Script" uid="uid://bwcre02q336mo" path="res://ChipData.gd" id="1_rl5fo"]
+
+[resource]
+script = ExtResource("1_rl5fo")
+chip_id = "chip_zero"
+chip_name = "Zero"
+description = "Jika angka 0 mencetak skor, mult +10"
+icon = ExtResource("1_opshw")
+bonus_flat_chips = 10
+target_tile_value = 0
+metadata/_custom_type_script = "uid://bwcre02q336mo"

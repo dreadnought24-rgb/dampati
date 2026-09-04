@@ -1,45 +1,154 @@
 [gd_scene format=3 uid="uid://c6woh4xrtrjkq"]
 
 [ext_resource type="Script" uid="uid://8e5oipvj11g7" path="res://main.gd" id="1_ig7tw"]
+[ext_resource type="PackedScene" uid="uid://wbiwomvamq3i" path="res://chip_slot_ui.tscn" id="2_1bvp3"]
+[ext_resource type="Texture2D" uid="uid://bnaqc13u4et41" path="res://assets/bg_file/ArenaBG (2).png" id="3_lquwl"]
+[ext_resource type="Script" uid="uid://ccula56edf35k" path="res://chip_manager.gd" id="4_1bvp3"]
+[ext_resource type="FontFile" uid="uid://b1l1gut62yqfc" path="res://assets/determination.ttf" id="4_lquwl"]
 
 [node name="main" type="Node2D" unique_id=2117175078]
 script = ExtResource("1_ig7tw")
+chip_slot_scene = ExtResource("2_1bvp3")
+
+[node name="ArenaBackground" type="Sprite2D" parent="." unique_id=27152710]
+texture = ExtResource("3_lquwl")
+centered = false
 
 [node name="Timer" type="Timer" parent="." unique_id=2030278574]
 autostart = true
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1855453903]
 
-[node name="Label" type="Label" parent="CanvasLayer" unique_id=1467084184]
-offset_left = 150.0
-offset_top = 10.0
-offset_right = 211.0
+[node name="ChipContainer" type="HBoxContainer" parent="CanvasLayer" unique_id=479271581]
+anchors_preset = -1
+anchor_left = 0.666
+anchor_top = 0.15300001
+anchor_right = 0.666
+anchor_bottom = 0.15300001
+offset_left = 0.0079956055
+offset_top = 0.0399971
+offset_right = 160.008
+offset_bottom = 32.039997
+theme_override_constants/separation = 4
+
+[node name="TotalKartu" type="Label" parent="CanvasLayer" unique_id=1478906525]
+offset_left = 392.0
+offset_top = 122.0
+offset_right = 410.0
+offset_bottom = 130.0
+theme_override_fonts/font = ExtResource("4_lquwl")
+theme_override_font_sizes/font_size = 6
+text = "28/28"
+
+[node name="RoundLabel" type="Label" parent="CanvasLayer" unique_id=313877286]
+offset_left = 94.0
+offset_top = 21.0
+offset_right = 128.0
 offset_bottom = 33.0
+theme_override_fonts/font = ExtResource("4_lquwl")
+theme_override_font_sizes/font_size = 9
+text = "Ronde 1"
+
+[node name="BabakLabel" type="Label" parent="CanvasLayer" unique_id=377402244]
+offset_left = 47.0
+offset_top = 21.0
+offset_right = 83.0
+offset_bottom = 33.0
+theme_override_fonts/font = ExtResource("4_lquwl")
+theme_override_font_sizes/font_size = 9
+text = "Babak  1"
+
+[node name="Label" type="Label" parent="CanvasLayer" unique_id=1467084184]
+offset_left = 81.0
+offset_top = 114.0
+offset_right = 135.0
+offset_bottom = 142.0
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("4_lquwl")
 theme_override_font_sizes/font_size = 20
-text = "Score: 0"
+text = "0"
+horizontal_alignment = 1
+
+[node name="LimitScore" type="Label" parent="CanvasLayer" unique_id=854392388]
+offset_left = 92.0
+offset_top = 51.0
+offset_right = 127.0
+offset_bottom = 78.0
+theme_override_fonts/font = ExtResource("4_lquwl")
+theme_override_font_sizes/font_size = 20
+text = "100"
+
+[node name="Base" type="Label" parent="CanvasLayer" unique_id=1797979417]
+offset_left = 102.0
+offset_top = 187.0
+offset_right = 108.0
+offset_bottom = 210.0
+text = "-"
+
+[node name="Combo" type="Label" parent="CanvasLayer" unique_id=1690428435]
+offset_left = 103.0
+offset_top = 245.0
+offset_right = 109.0
+offset_bottom = 268.0
+text = "-"
+
+[node name="GetKoin" type="Label" parent="CanvasLayer" unique_id=447873848]
+offset_left = 151.0
+offset_top = 21.0
+offset_right = 162.0
+offset_bottom = 33.0
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.94509804, 0.8156863, 0.007843138, 1)
+theme_override_fonts/font = ExtResource("4_lquwl")
+theme_override_font_sizes/font_size = 9
+text = "3"
+
+[node name="koin" type="Label" parent="CanvasLayer" unique_id=1785471678]
+offset_left = 357.0
+offset_top = 222.0
+offset_right = 392.0
+offset_bottom = 253.0
+size_flags_horizontal = 8
+theme_override_colors/font_color = Color(0.94509804, 0.8156863, 0.007843138, 1)
+theme_override_fonts/font = ExtResource("4_lquwl")
+theme_override_font_sizes/font_size = 23
+text = "0"
+
+[node name="NextPieceContainer" type="Node2D" parent="CanvasLayer" unique_id=1364226525]
+position = Vector2(338, 116)
+
+[node name="Panel" type="Panel" parent="CanvasLayer/NextPieceContainer" unique_id=1319510859]
+offset_top = -1.0
+offset_right = 32.0
+offset_bottom = 63.0
 
 [node name="GameOverLayer" type="CanvasLayer" parent="." unique_id=1253865483]
 visible = false
 
 [node name="ColorRect" type="ColorRect" parent="GameOverLayer" unique_id=1474317654]
-offset_top = 87.0
-offset_right = 128.0
-offset_bottom = 171.0
+offset_left = 128.0
+offset_top = 95.0
+offset_right = 394.0
+offset_bottom = 263.0
 color = Color(0, 0, 0, 1)
 
 [node name="Label" type="Label" parent="GameOverLayer" unique_id=599294979]
-offset_left = 20.0
-offset_top = 90.0
-offset_right = 107.0
-offset_bottom = 113.0
+offset_left = 218.0
+offset_top = 106.0
+offset_right = 305.0
+offset_bottom = 129.0
 text = "Game Over"
 
 [node name="RestartButton" type="Button" parent="GameOverLayer" unique_id=876818097]
-offset_left = 30.0
-offset_top = 140.0
-offset_right = 95.0
-offset_bottom = 171.0
+offset_left = 231.0
+offset_top = 154.0
+offset_right = 296.0
+offset_bottom = 185.0
 text = "Restart"
+
+[node name="ChipManager" type="Node" parent="." unique_id=1717626266]
+script = ExtResource("4_1bvp3")
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="pressed" from="GameOverLayer/RestartButton" to="." method="_on_restart_button_pressed"]
