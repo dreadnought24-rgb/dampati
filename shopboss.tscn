@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://cgvj4kr1x5xjm"]
+
+[ext_resource type="Script" uid="uid://b4pcc8twoucof" path="res://shop.gd" id="1_ggpl7"]
+[ext_resource type="Texture2D" uid="uid://br7eevmlfqw63" path="res://assets/bg_file/bg_shopboss.png" id="2_7w8bn"]
+[ext_resource type="FontFile" uid="uid://b1l1gut62yqfc" path="res://assets/determination.ttf" id="3_6pgw0"]
+[ext_resource type="Texture2D" uid="uid://bvaadf0xoewla" path="res://assets/sprites/buttons/nextRound-base.png" id="4_2mu8q"]
+[ext_resource type="Texture2D" uid="uid://ikxc8wkcjy71" path="res://assets/sprites/buttons/nextRound-active.png" id="5_l8s2l"]
+[ext_resource type="Texture2D" uid="uid://qsiusc6c1wwr" path="res://assets/sprites/buttons/nextRound-hovered.png" id="6_2xhsi"]
+
+[node name="shop" type="Node2D" unique_id=1994871811]
+script = ExtResource("1_ggpl7")
+
+[node name="shopbg" type="Sprite2D" parent="." unique_id=678564219]
+position = Vector2(256, 320)
+texture = ExtResource("2_7w8bn")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1113924167]
+
+[node name="koin" type="Label" parent="CanvasLayer" unique_id=1960032646]
+offset_left = 443.0
+offset_top = 25.0
+offset_right = 478.0
+offset_bottom = 56.0
+size_flags_horizontal = 8
+theme_override_colors/font_color = Color(0.94509804, 0.8156863, 0.007843138, 1)
+theme_override_fonts/font = ExtResource("3_6pgw0")
+theme_override_font_sizes/font_size = 23
+text = "0"
+
+[node name="nextbutton" type="TextureButton" parent="CanvasLayer" unique_id=708394784]
+offset_left = 404.0
+offset_top = 269.0
+offset_right = 468.0
+offset_bottom = 301.0
+texture_normal = ExtResource("4_2mu8q")
+texture_pressed = ExtResource("5_l8s2l")
+texture_hover = ExtResource("6_2xhsi")

@@ -9,6 +9,7 @@ chip_id = "chip_zero"
 chip_name = "Zero"
 description = "Jika angka 0 mencetak skor, mult +10"
 icon = ExtResource("1_opshw")
+price = 5
 bonus_flat_chips = 10
 target_tile_value = 0
 metadata/_custom_type_script = "uid://bwcre02q336mo"
