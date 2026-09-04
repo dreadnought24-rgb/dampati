@@ -9,6 +9,7 @@ const NO_PARTNER := Vector2i(-1, -1)
 const DOMINO_CARD_SCENE := preload("res://domino_card.tscn")
 const DOMINO_PIECE_SCENE := preload("res://domino_piece.tscn")
 
+const MAIN_MENU_SCENE: String = "res://mainmenu.tscn" # Sesuaikan path file scene menu kamu
 const FALL_STEP_DELAY := 0.15  # jeda tiap kartu turun 1 baris (detik), bisa disesuaikan
 
 @export var chip_slot_scene: PackedScene
@@ -27,6 +28,15 @@ const FALL_STEP_DELAY := 0.15  # jeda tiap kartu turun 1 baris (detik), bisa dis
 @onready var chip_container: HBoxContainer = $CanvasLayer/ChipContainer
 @onready var total_kartu_label: Label = $CanvasLayer/TotalKartu
 @onready var base_label: Label = $CanvasLayer/Base  # atau $Base sesuai nama node di Scene Tree
+@onready var pause_button: TextureButton = $Pause
+@onready var canvas_layer_2: CanvasLayer = $Pause/CanvasLayer2
+@onready var panel: Panel = $Pause/CanvasLayer2/Panel
+@onready var sprite_2d: Sprite2D = $Pause/CanvasLayer2/Sprite2D
+@onready var resume: TextureButton = $Pause/CanvasLayer2/resume
+@onready var mainmenu: TextureButton = $Pause/CanvasLayer2/mainmenu
+
+
+
 
 var grid_data: Array = []
 var grid_nodes: Array = []
@@ -52,6 +62,20 @@ var sisa_kartu: int = 28
 var base_reset_timer: SceneTreeTimer = null
 
 func _ready() -> void:
+	# Sembunyikan CanvasLayer pause saat game baru mulai
+	if canvas_layer_2:
+		canvas_layer_2.hide()
+	
+	# Hubungkan signal tombol secara aman (cegah error 'already connected')
+	if pause_button and not pause_button.pressed.is_connected(_on_pause_button_pressed):
+		pause_button.pressed.connect(_on_pause_button_pressed)
+		
+	if resume and not resume.pressed.is_connected(_on_resume_pressed):
+		resume.pressed.connect(_on_resume_pressed)
+		
+	if mainmenu and not mainmenu.pressed.is_connected(_on_mainmenu_pressed):
+		mainmenu.pressed.connect(_on_mainmenu_pressed)
+	
 	randomize()
 	init_grid_data()
 	build_deck()
@@ -760,3 +784,32 @@ func show_base_earned(value: int) -> void:
 	# sehingga kode di bawah ini diputus/diabaikan untuk gerakan lama.
 	if base_reset_timer and base_reset_timer.time_left <= 0:
 		base_label.text = "0"
+
+func _on_main_menu_button_pressed() -> void:
+	get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+	
+# 1. Buka Menu Pause (Dipanggil dari tombol Keyboard ESC)
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		open_pause_menu()
+
+# 2. Fungsi Utama Buka Pause
+func open_pause_menu() -> void:
+	if canvas_layer_2:
+		canvas_layer_2.show()
+		get_tree().paused = true
+
+# 3. Klik Tombol $Pause (GUI)
+func _on_pause_button_pressed() -> void:
+	open_pause_menu()
+
+# 4. Klik Tombol $Pause/CanvasLayer2/resume
+func _on_resume_pressed() -> void:
+	if canvas_layer_2:
+		canvas_layer_2.hide()
+		get_tree().paused = false
+
+# 5. Klik Tombol $Pause/CanvasLayer2/mainmenu
+func _on_mainmenu_pressed() -> void:
+	get_tree().paused = false # Wajib unpause agar scene menu tidak ikut membeku
+	get_tree().change_scene_to_file(MAIN_MENU_SCENE)

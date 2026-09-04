@@ -4,48 +4,21 @@
 [ext_resource type="PackedScene" uid="uid://wbiwomvamq3i" path="res://chip_slot_ui.tscn" id="2_1bvp3"]
 [ext_resource type="Texture2D" uid="uid://bnaqc13u4et41" path="res://assets/bg_file/ArenaBG (2).png" id="3_lquwl"]
 [ext_resource type="Script" uid="uid://ccula56edf35k" path="res://chip_manager.gd" id="4_1bvp3"]
+[ext_resource type="Texture2D" uid="uid://dq7m1nqufhwva" path="res://assets/sprites/panels/pausePanel.png" id="4_2cqfq"]
 [ext_resource type="FontFile" uid="uid://b1l1gut62yqfc" path="res://assets/determination.ttf" id="4_lquwl"]
 [ext_resource type="Texture2D" uid="uid://d3wbi2e8lxvly" path="res://assets/sprites/panels/gameOver.png" id="5_dg77c"]
 [ext_resource type="Texture2D" uid="uid://dcwra81mdla8i" path="res://assets/sprites/buttons/menu-active.png" id="6_ycdy4"]
 [ext_resource type="Texture2D" uid="uid://b2dp3qwrt3vcw" path="res://assets/sprites/buttons/menu-base.png" id="7_w48qg"]
+[ext_resource type="Texture2D" uid="uid://ddoof3e6hv6ks" path="res://assets/sprites/buttons/resume-active.png" id="8_cegan"]
 [ext_resource type="Texture2D" uid="uid://binkfknwxghko" path="res://assets/sprites/buttons/menu-hovered.png" id="8_vivmo"]
-[ext_resource type="Texture2D" uid="uid://ci4jyf1lf24vx" path="res://assets/sprites/buttons/play-active.png" id="9_2cqfq"]
-[ext_resource type="Texture2D" uid="uid://cwgtb0kyhgeih" path="res://assets/sprites/buttons/play-base.png" id="10_yaehf"]
-[ext_resource type="Texture2D" uid="uid://bygco66cwwgnp" path="res://assets/sprites/buttons/play-hovered.png" id="11_074og"]
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_n1vxr"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("7_w48qg")
-}, {
-"duration": 1.0,
-"texture": ExtResource("6_ycdy4")
-}, {
-"duration": 1.0,
-"texture": ExtResource("8_vivmo")
-}],
-"loop": 1,
-"name": &"default",
-"speed": 5.0
-}]
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_07dut"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("9_2cqfq")
-}, {
-"duration": 1.0,
-"texture": ExtResource("10_yaehf")
-}, {
-"duration": 1.0,
-"texture": ExtResource("11_074og")
-}],
-"loop": 1,
-"name": &"play game",
-"speed": 5.0
-}]
+[ext_resource type="Texture2D" uid="uid://douobxowde0cq" path="res://assets/sprites/buttons/resume-base.png" id="9_82xsv"]
+[ext_resource type="Texture2D" uid="uid://cid1nje5iwha6" path="res://assets/sprites/buttons/restart_active.png" id="9_dg77c"]
+[ext_resource type="Texture2D" uid="uid://dj3nt52qucs0m" path="res://assets/sprites/buttons/resume-hovered.png" id="10_getpj"]
+[ext_resource type="Texture2D" uid="uid://bp1ig8ffbm8xb" path="res://assets/sprites/buttons/restart_base.png" id="10_ycdy4"]
+[ext_resource type="Texture2D" uid="uid://l1wg0dwntc37" path="res://assets/sprites/buttons/restart_hovered.png" id="11_w48qg"]
+[ext_resource type="Texture2D" uid="uid://ct8odv007dj2h" path="res://assets/sprites/buttons/sprite_0.png" id="13_yaehf"]
+[ext_resource type="Texture2D" uid="uid://ba12f4jl1ht2q" path="res://assets/sprites/buttons/sprite_1.png" id="14_074og"]
+[ext_resource type="Texture2D" uid="uid://cyflqnylww401" path="res://assets/sprites/buttons/sprite_2.png" id="15_cegan"]
 
 [node name="main" type="Node2D" unique_id=2117175078]
 script = ExtResource("1_ig7tw")
@@ -157,6 +130,7 @@ theme_override_font_sizes/font_size = 23
 text = "80"
 
 [node name="NextPieceContainer" type="Node2D" parent="CanvasLayer" unique_id=1364226525]
+z_as_relative = false
 position = Vector2(338, 116)
 
 [node name="Panel" type="Panel" parent="CanvasLayer/NextPieceContainer" unique_id=1319510859]
@@ -165,34 +139,28 @@ offset_right = 32.0
 offset_bottom = 63.0
 
 [node name="GameOverLayer" type="CanvasLayer" parent="." unique_id=1253865483]
-visible = false
 
 [node name="Sprite2D" type="Sprite2D" parent="GameOverLayer" unique_id=1157384195]
 position = Vector2(261, 148)
 texture = ExtResource("5_dg77c")
 
-[node name="MainMenu" type="AnimatedSprite2D" parent="GameOverLayer/Sprite2D" unique_id=1318873801]
-position = Vector2(35.99997, 64)
-scale = Vector2(1.0312499, 1.0625)
-sprite_frames = SubResource("SpriteFrames_n1vxr")
-autoplay = "default"
-frame_progress = 0.46974072
+[node name="TextureButton" type="TextureButton" parent="GameOverLayer/Sprite2D" unique_id=1533463992]
+offset_left = -68.0
+offset_top = 48.0
+offset_right = -4.0
+offset_bottom = 80.0
+texture_normal = ExtResource("10_ycdy4")
+texture_pressed = ExtResource("9_dg77c")
+texture_hover = ExtResource("11_w48qg")
 
-[node name="PlayGame" type="AnimatedSprite2D" parent="GameOverLayer/Sprite2D" unique_id=1146043959]
-position = Vector2(-36, 64)
-scale = Vector2(1.0312496, 1.0625007)
-sprite_frames = SubResource("SpriteFrames_07dut")
-animation = &"play game"
-autoplay = "play game"
-frame_progress = 0.13630256
-
-[node name="ColorRect" type="ColorRect" parent="GameOverLayer" unique_id=1474317654]
-visible = false
-offset_left = 128.0
-offset_top = 95.0
-offset_right = 394.0
-offset_bottom = 263.0
-color = Color(0, 0, 0, 1)
+[node name="TextureButton2" type="TextureButton" parent="GameOverLayer/Sprite2D" unique_id=456694907]
+offset_left = 4.0
+offset_top = 48.0
+offset_right = 68.0
+offset_bottom = 80.0
+texture_normal = ExtResource("7_w48qg")
+texture_pressed = ExtResource("6_ycdy4")
+texture_hover = ExtResource("8_vivmo")
 
 [node name="Label" type="Label" parent="GameOverLayer" unique_id=599294979]
 visible = false
@@ -202,15 +170,54 @@ offset_right = 305.0
 offset_bottom = 129.0
 text = "Game Over"
 
-[node name="RestartButton" type="Button" parent="GameOverLayer" unique_id=876818097]
-offset_left = 194.0
-offset_top = 194.0
-offset_right = 259.0
-offset_bottom = 225.0
-text = "Restart"
-
 [node name="ChipManager" type="Node" parent="." unique_id=1717626266]
 script = ExtResource("4_1bvp3")
 
+[node name="Pause" type="TextureButton" parent="." unique_id=433575921]
+process_mode = 3
+offset_left = 7.0
+offset_top = 282.0
+offset_right = 39.0
+offset_bottom = 314.0
+texture_normal = ExtResource("14_074og")
+texture_pressed = ExtResource("15_cegan")
+texture_hover = ExtResource("13_yaehf")
+
+[node name="CanvasLayer2" type="CanvasLayer" parent="Pause" unique_id=115470420]
+layer = 4
+visible = false
+
+[node name="Panel" type="Panel" parent="Pause/CanvasLayer2" unique_id=336931371]
+offset_right = 512.0
+offset_bottom = 319.0
+
+[node name="Sprite2D" type="Sprite2D" parent="Pause/CanvasLayer2" unique_id=1740805631]
+position = Vector2(261, 165)
+texture = ExtResource("4_2cqfq")
+
+[node name="resume" type="TextureButton" parent="Pause/CanvasLayer2" unique_id=278133610]
+process_mode = 3
+offset_left = 229.0
+offset_top = 129.0
+offset_right = 293.0
+offset_bottom = 161.0
+texture_normal = ExtResource("9_82xsv")
+texture_pressed = ExtResource("8_cegan")
+texture_hover = ExtResource("10_getpj")
+
+[node name="mainmenu" type="TextureButton" parent="Pause/CanvasLayer2" unique_id=763493321]
+process_mode = 3
+offset_left = 229.0
+offset_top = 169.0
+offset_right = 293.0
+offset_bottom = 201.0
+texture_normal = ExtResource("7_w48qg")
+texture_pressed = ExtResource("6_ycdy4")
+texture_hover = ExtResource("8_vivmo")
+
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
-[connection signal="pressed" from="GameOverLayer/RestartButton" to="." method="_on_restart_button_pressed"]
+[connection signal="pressed" from="GameOverLayer/Sprite2D/TextureButton" to="." method="_on_restart_button_pressed"]
+[connection signal="pressed" from="GameOverLayer/Sprite2D/TextureButton2" to="." method="_on_mainmenu_pressed"]
+[connection signal="pressed" from="Pause" to="." method="_on_pause_button_pressed"]
+[connection signal="pressed" from="Pause/CanvasLayer2/resume" to="." method="_on_resume_pressed"]
+[connection signal="pressed" from="Pause/CanvasLayer2/mainmenu" to="." method="_on_mainmenu_pressed"]
