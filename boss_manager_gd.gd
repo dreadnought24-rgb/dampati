@@ -24,9 +24,6 @@ func activate_random_boss() -> void:
 		BossType.GONDRONG,
 		BossType.YELLOW,
 		BossType.KADIV_KONSUM,
-		BossType.FURRY,
-		BossType.ATMIN,
-		BossType.KOMDIS
 	]
 	current_boss = pool[randi() % pool.size()]
 	print("BOSS AKTIF: ", BossType.keys()[current_boss])

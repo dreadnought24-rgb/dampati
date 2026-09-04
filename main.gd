@@ -9,6 +9,7 @@ const NO_PARTNER := Vector2i(-1, -1)
 const DOMINO_CARD_SCENE := preload("res://domino_card.tscn")
 const DOMINO_PIECE_SCENE := preload("res://domino_piece.tscn")
 
+const MAIN_MENU_SCENE: String = "res://mainmenu.tscn" # Sesuaikan path file scene menu kamu
 const FALL_STEP_DELAY := 0.15  # jeda tiap kartu turun 1 baris (detik), bisa disesuaikan
 
 @export var chip_slot_scene: PackedScene
@@ -27,10 +28,19 @@ const FALL_STEP_DELAY := 0.15  # jeda tiap kartu turun 1 baris (detik), bisa dis
 @onready var chip_container: HBoxContainer = $CanvasLayer/ChipContainer
 @onready var total_kartu_label: Label = $CanvasLayer/TotalKartu
 @onready var base_label: Label = $CanvasLayer/Base  # atau $Base sesuai nama node di Scene Tree
+@onready var pause_button: TextureButton = $Pause
+@onready var canvas_layer_2: CanvasLayer = $Pause/CanvasLayer2
+@onready var panel: Panel = $Pause/CanvasLayer2/Panel
+@onready var sprite_2d: Sprite2D = $Pause/CanvasLayer2/Sprite2D
+@onready var resume: TextureButton = $Pause/CanvasLayer2/resume
+@onready var mainmenu: TextureButton = $Pause/CanvasLayer2/mainmenu
+
+
+
 @onready var koin_label: Label = $CanvasLayer/koin
 @onready var getkoin_label : Label = $CanvasLayer/GetKoin
 @onready var boss_manager: Node = $BossManager
-@onready var gondrong_overlay: Sprite2D = $GondrongOverlay
+@onready var gondrong_overlay: AnimatedSprite2D = $GondrongOverlay
 
 const GONDRONG_START_ROW := 4  # baris ke-5 (0-indexed)
 const GONDRONG_END_ROW := 7    # baris ke-8 (0-indexed)
@@ -61,7 +71,26 @@ var sisa_kartu: int = 28
 var base_reset_timer: SceneTreeTimer = null
 
 func _ready() -> void:
-	gondrong_overlay.visible = false
+	# taruh sementara di _ready() atau lewat tombol debug
+	boss_manager.current_boss = boss_manager.BossType.GONDRONG
+	update_boss_visuals()
+	gondrong_overlay.visible = true
+
+	# Sembunyikan CanvasLayer pause saat game baru mulai
+	if canvas_layer_2:
+		canvas_layer_2.hide()
+	
+	# Hubungkan signal tombol secara aman (cegah error 'already connected')
+	if pause_button and not pause_button.pressed.is_connected(_on_pause_button_pressed):
+		pause_button.pressed.connect(_on_pause_button_pressed)
+		
+	if resume and not resume.pressed.is_connected(_on_resume_pressed):
+		resume.pressed.connect(_on_resume_pressed)
+		
+	if mainmenu and not mainmenu.pressed.is_connected(_on_mainmenu_pressed):
+		mainmenu.pressed.connect(_on_mainmenu_pressed)
+	
+
 	randomize()
 	init_grid_data()
 	build_deck()
@@ -813,6 +842,34 @@ func show_base_earned(value: int) -> void:
 	if base_reset_timer and base_reset_timer.time_left <= 0:
 		base_label.text = "0"
 
+func _on_main_menu_button_pressed() -> void:
+	get_tree().change_scene_to_file(MAIN_MENU_SCENE)
+	
+# 1. Buka Menu Pause (Dipanggil dari tombol Keyboard ESC)
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		open_pause_menu()
+
+# 2. Fungsi Utama Buka Pause
+func open_pause_menu() -> void:
+	if canvas_layer_2:
+		canvas_layer_2.show()
+		get_tree().paused = true
+
+# 3. Klik Tombol $Pause (GUI)
+func _on_pause_button_pressed() -> void:
+	open_pause_menu()
+
+# 4. Klik Tombol $Pause/CanvasLayer2/resume
+func _on_resume_pressed() -> void:
+	if canvas_layer_2:
+		canvas_layer_2.hide()
+		get_tree().paused = false
+
+# 5. Klik Tombol $Pause/CanvasLayer2/mainmenu
+func _on_mainmenu_pressed() -> void:
+	get_tree().paused = false # Wajib unpause agar scene menu tidak ikut membeku
+	get_tree().change_scene_to_file(MAIN_MENU_SCENE)
 # zzz
 # Reward dasar per posisi ronde dalam 1 babak (index 0 = ronde 1, dst; index 3 = ronde 4/boss)
 const ROUND_KOIN_REWARDS := [3, 5, 7, 10]
@@ -836,10 +893,17 @@ func update_getkoin_ui() -> void:
 
 func update_boss_visuals() -> void:
 	var is_gondrong = boss_manager.is_active(boss_manager.BossType.GONDRONG)
+	print("update_boss_visuals dipanggil, is_gondrong=", is_gondrong)
 	gondrong_overlay.visible = is_gondrong
+	print("Boss aktif: ", boss_manager.BossType.keys()[boss_manager.current_boss])
 	if is_gondrong:
 		var top_left = grid_to_pixel(0, GONDRONG_START_ROW)
 		var row_count = GONDRONG_END_ROW - GONDRONG_START_ROW + 1
 		gondrong_overlay.position = top_left
-		gondrong_overlay.size = Vector2(GRID_COLS * CELL_SIZE, row_count * CELL_SIZE)
-		gondrong_overlay.color = Color(0.05, 0.03, 0.02, 0.95)  # nyaris hitam pekat, "rambut"
+
+		var target_size = Vector2(GRID_COLS * CELL_SIZE, row_count * CELL_SIZE)
+		var frame_tex = gondrong_overlay.sprite_frames.get_frame_texture("grow", 0)
+		var frame_size = frame_tex.get_size()
+		gondrong_overlay.scale = target_size / frame_size
+
+		gondrong_overlay.play("grow")

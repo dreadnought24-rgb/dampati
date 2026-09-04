@@ -20,34 +20,6 @@
 [ext_resource type="Texture2D" uid="uid://ct8odv007dj2h" path="res://assets/sprites/buttons/sprite_0.png" id="13_yaehf"]
 [ext_resource type="Texture2D" uid="uid://ba12f4jl1ht2q" path="res://assets/sprites/buttons/sprite_1.png" id="14_074og"]
 [ext_resource type="Texture2D" uid="uid://cyflqnylww401" path="res://assets/sprites/buttons/sprite_2.png" id="15_cegan"]
-[ext_resource type="Texture2D" uid="uid://cjmi56gh4qsbd" path="res://assets/sprites/bosses/gndrng0.png" id="21_0odxb"]
-[ext_resource type="Texture2D" uid="uid://caw73xiekdjty" path="res://assets/sprites/bosses/gndrng1.png" id="22_lswn8"]
-[ext_resource type="Texture2D" uid="uid://04vyi4ir8qcp" path="res://assets/sprites/bosses/gndrng2.png" id="23_a6jrf"]
-[ext_resource type="Texture2D" uid="uid://8buqm20juhff" path="res://assets/sprites/bosses/gndrng3.png" id="24_xuqvo"]
-[ext_resource type="Texture2D" uid="uid://b5tjgjhqtfs6y" path="res://assets/sprites/bosses/gndrng4.png" id="25_qsp4k"]
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_lvwo2"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("21_0odxb")
-}, {
-"duration": 1.0,
-"texture": ExtResource("22_lswn8")
-}, {
-"duration": 1.0,
-"texture": ExtResource("23_a6jrf")
-}, {
-"duration": 1.0,
-"texture": ExtResource("24_xuqvo")
-}, {
-"duration": 1.0,
-"texture": ExtResource("25_qsp4k")
-}],
-"loop": 1,
-"name": &"grow",
-"speed": 5.0
-}]
 
 [node name="main" type="Node2D" unique_id=2117175078]
 script = ExtResource("1_ig7tw")
@@ -202,6 +174,8 @@ text = "Game Over"
 [node name="ChipManager" type="Node" parent="." unique_id=1717626266]
 script = ExtResource("4_1bvp3")
 
+[node name="GondrongOverlay" type="Sprite2D" parent="." unique_id=708766010]
+
 [node name="BossManager" type="Node2D" parent="." unique_id=242705176]
 script = ExtResource("6_7mycd")
 
@@ -246,12 +220,6 @@ offset_bottom = 201.0
 texture_normal = ExtResource("7_w48qg")
 texture_pressed = ExtResource("6_ycdy4")
 texture_hover = ExtResource("8_vivmo")
-
-[node name="GondrongOverlay" type="AnimatedSprite2D" parent="." unique_id=736780104]
-position = Vector2(260, 159)
-sprite_frames = SubResource("SpriteFrames_lvwo2")
-animation = &"grow"
-frame_progress = 0.3325652
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="pressed" from="GameOverLayer/Sprite2D/TextureButton" to="." method="_on_restart_button_pressed"]

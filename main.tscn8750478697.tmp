@@ -251,7 +251,7 @@ texture_hover = ExtResource("8_vivmo")
 position = Vector2(260, 159)
 sprite_frames = SubResource("SpriteFrames_lvwo2")
 animation = &"grow"
-frame_progress = 0.3325652
+frame = 4
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="pressed" from="GameOverLayer/Sprite2D/TextureButton" to="." method="_on_restart_button_pressed"]

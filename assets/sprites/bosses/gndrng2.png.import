@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c51bsf6kswu2f"
-path="res://.godot/imported/nextRound-base.png-685664de528b662f978d557374c7906c.ctex"
+uid="uid://04vyi4ir8qcp"
+path="res://.godot/imported/gndrng2.png-21c0915a03c19c2a83f9f48c0976ce4f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/buttons/LongButton/nextRound-base.png"
-dest_files=["res://.godot/imported/nextRound-base.png-685664de528b662f978d557374c7906c.ctex"]
+source_file="res://assets/sprites/bosses/gndrng2.png"
+dest_files=["res://.godot/imported/gndrng2.png-21c0915a03c19c2a83f9f48c0976ce4f.ctex"]
 
 [params]
 
