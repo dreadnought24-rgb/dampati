@@ -15,6 +15,7 @@ const FALL_STEP_DELAY := 0.15  # jeda tiap kartu turun 1 baris (detik), bisa dis
 
 @onready var score_label: Label = $CanvasLayer/Label
 @onready var round_label: Label = $CanvasLayer/RoundLabel
+@onready var babak_label: Label = $CanvasLayer/BabakLabel
 @onready var game_over_layer: CanvasLayer = $GameOverLayer
 @onready var game_over_label: Label = $GameOverLayer/Label
 #@onready var nilai_label: Label = $CanvasLayer/NilaiLabel
@@ -24,6 +25,8 @@ const FALL_STEP_DELAY := 0.15  # jeda tiap kartu turun 1 baris (detik), bisa dis
 @onready var next_piece_container: Node2D = $CanvasLayer/NextPieceContainer
 @onready var chip_manager: Node = $ChipManager
 @onready var chip_container: HBoxContainer = $CanvasLayer/ChipContainer
+@onready var total_kartu_label: Label = $CanvasLayer/TotalKartu
+@onready var base_label: Label = $CanvasLayer/Base  # atau $Base sesuai nama node di Scene Tree
 
 var grid_data: Array = []
 var grid_nodes: Array = []
@@ -43,12 +46,18 @@ var next_piece_data: Vector2i = Vector2i(-1, -1)
 var next_piece_offset: Vector2i = Vector2i(0, 1)
 var next_piece_preview_node: Node2D = null
 
+var max_kartu: int = 28
+var sisa_kartu: int = 28
+
+var base_reset_timer: SceneTreeTimer = null
+
 func _ready() -> void:
 	randomize()
 	init_grid_data()
 	build_deck()
 	update_round_label()
 	update_score_label()
+	update_limit_score_ui()
 
 	# 1. Load Chip Zero
 	#var zero_chip = load("res://chip_power/chip_zero.tres")
@@ -56,13 +65,14 @@ func _ready() -> void:
 		#chip_manager.add_chip(zero_chip)
 
 	# 2. Load Chip One
-	var one_chip = load("res://chip_power/chip_balak.tres") # Sesuaikan nama file .tres kamu
-	if one_chip:
-		chip_manager.add_chip(one_chip)
+	#var one_chip = load("res://chip_power/chip_balak.tres") # Sesuaikan nama file .tres kamu
+	#if one_chip:
+		#chip_manager.add_chip(one_chip)
 
 	# 3. Tampilkan seluruh chip yang terpasang ke UI
 	render_chip_slots()
-
+	
+	reset_total_kartu()
 	spawn_piece()
 
 func init_grid_data() -> void:
@@ -128,6 +138,10 @@ func spawn_piece() -> void:
 		current_piece.set_values(next_piece_data.x, next_piece_data.y)
 
 	current_piece.position = grid_to_pixel(current_col, current_row)
+	
+# --- KURANGI KARTU DAN UPDATE UI DI SINI ---
+	sisa_kartu -= 1
+	update_total_kartu_ui()
 
 	# Siapkan kartu berikutnya untuk UI Next Piece
 	prepare_next_piece()
@@ -321,6 +335,9 @@ func check_matches() -> bool:
 			found_match = true
 			
 			print("DEBUG MATCH: Base=", total_base_earned, " | Is Double=", is_double_match, " | Final Earned=", final_earned, " | Score Sekarang=", score)
+			
+			show_base_earned(total_base_earned)
+			#update_base_label(total_base_earned)
 
 	return found_match
 ## --- 3. Hitung Total Skor & Kalkulasi Chip Seluruh Kartu Yang Hancur ---
@@ -604,7 +621,14 @@ func advance_round() -> void:
 	init_grid_data()
 	build_deck()
 	update_round_label()
+	update_limit_score_ui()
+	reset_total_kartu()
 	spawn_piece()
+	
+	
+func update_limit_score_ui() -> void:
+	if limit_score_label:
+		limit_score_label.text = str(get_round_score_limit())
 	
 func fail_round() -> void:
 	print("GAGAL! Skor: ", score, " tidak mencapai limit ", get_round_score_limit())
@@ -621,13 +645,12 @@ func win_all_stages() -> void:
 	game_over_layer.visible = true
 	
 func update_round_label() -> void:
-	# Label Ronde hanya menampilkan Babak & Ronde
-	round_label.text = "Babak " + str(current_stage) + " - Ronde " + str(current_round)
+	if babak_label:
+		babak_label.text = "Babak " + str(current_stage)
 	
-	# Label LimitScore hanya menampilkan Target Poin
-	if limit_score_label:
-		limit_score_label.text = str(get_round_score_limit())
-#	disini ya nanti
+	if round_label:
+		round_label.text = "Ronde " + str(current_round)
+
 func is_boss_round() -> bool:
 	return current_round == 4
 	
@@ -703,3 +726,37 @@ func render_chip_slots() -> void:
 
 		if slot_instance.has_method("setup_chip"):
 			slot_instance.setup_chip(chip)
+
+
+func update_total_kartu_ui() -> void:
+	if total_kartu_label:
+		total_kartu_label.text = str(sisa_kartu) + "/" + str(max_kartu)
+		
+# Panggil fungsi ini saat Game Start, Restart, atau Berpindah Ronde
+func reset_total_kartu() -> void:
+	sisa_kartu = max_kartu
+	update_total_kartu_ui()
+	
+func update_base_label(value: int) -> void:
+	if base_label:
+		base_label.text = str(value)
+
+
+func show_base_earned(value: int) -> void:
+	if not base_label:
+		return
+
+	# Update teks dengan nilai base yang baru dapat
+	base_label.text = str(value)
+	
+	# Buat timer 0.5 detik baru
+	base_reset_timer = get_tree().create_timer(0.75)
+	
+	# Tunggu timer selesai
+	await base_reset_timer.timeout
+	
+	# Cek apakah timer ini masih timer yang aktif terakhir kali dipanggil.
+	# Jika pemain bergerak lagi sebelum 0.5 detik, base_reset_timer akan diganti,
+	# sehingga kode di bawah ini diputus/diabaikan untuk gerakan lama.
+	if base_reset_timer and base_reset_timer.time_left <= 0:
+		base_label.text = "0"
