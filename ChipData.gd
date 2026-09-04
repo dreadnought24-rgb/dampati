@@ -27,3 +27,6 @@ enum TriggerType {
 # --- SYARAT KONDISIONAL ---
 @export var target_tile_value: int = -1    # -1 = Semua angka, 0-6 = Angka spesifik
 @export var require_balak: bool = false    # Khusus kartu kembar/balak
+
+# Tambahkan di bagian variabel export ChipData
+@export var requires_double: bool = false # Centang true jika chip hanya aktif untuk kartu Balak

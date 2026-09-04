@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://8e5oipvj11g7" path="res://main.gd" id="1_ig7tw"]
 [ext_resource type="PackedScene" uid="uid://wbiwomvamq3i" path="res://chip_slot_ui.tscn" id="2_1bvp3"]
-[ext_resource type="Texture2D" uid="uid://b6exhhowa2kjc" path="res://assets/bg_file/bg_u_final.png" id="2_h2yge"]
+[ext_resource type="Texture2D" uid="uid://bnaqc13u4et41" path="res://assets/bg_file/ArenaBG (2).png" id="3_lquwl"]
 [ext_resource type="Script" uid="uid://ccula56edf35k" path="res://chip_manager.gd" id="4_1bvp3"]
 [ext_resource type="FontFile" uid="uid://b1l1gut62yqfc" path="res://assets/determination.ttf" id="4_lquwl"]
 
@@ -11,7 +11,7 @@ script = ExtResource("1_ig7tw")
 chip_slot_scene = ExtResource("2_1bvp3")
 
 [node name="ArenaBackground" type="Sprite2D" parent="." unique_id=27152710]
-texture = ExtResource("2_h2yge")
+texture = ExtResource("3_lquwl")
 centered = false
 
 [node name="Timer" type="Timer" parent="." unique_id=2030278574]
@@ -31,11 +31,38 @@ offset_right = 160.008
 offset_bottom = 32.039997
 theme_override_constants/separation = 4
 
+[node name="TotalKartu" type="Label" parent="CanvasLayer" unique_id=1478906525]
+offset_left = 392.0
+offset_top = 122.0
+offset_right = 410.0
+offset_bottom = 130.0
+theme_override_fonts/font = ExtResource("4_lquwl")
+theme_override_font_sizes/font_size = 6
+text = "28/28"
+
+[node name="RoundLabel" type="Label" parent="CanvasLayer" unique_id=313877286]
+offset_left = 94.0
+offset_top = 21.0
+offset_right = 128.0
+offset_bottom = 33.0
+theme_override_fonts/font = ExtResource("4_lquwl")
+theme_override_font_sizes/font_size = 9
+text = "Ronde 1"
+
+[node name="BabakLabel" type="Label" parent="CanvasLayer" unique_id=377402244]
+offset_left = 47.0
+offset_top = 21.0
+offset_right = 83.0
+offset_bottom = 33.0
+theme_override_fonts/font = ExtResource("4_lquwl")
+theme_override_font_sizes/font_size = 9
+text = "Babak  1"
+
 [node name="Label" type="Label" parent="CanvasLayer" unique_id=1467084184]
-offset_left = 103.0
-offset_top = 115.0
-offset_right = 115.0
-offset_bottom = 143.0
+offset_left = 81.0
+offset_top = 114.0
+offset_right = 135.0
+offset_bottom = 142.0
 size_flags_horizontal = 4
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("4_lquwl")
@@ -43,30 +70,16 @@ theme_override_font_sizes/font_size = 20
 text = "0"
 horizontal_alignment = 1
 
-[node name="RoundLabel" type="Label" parent="CanvasLayer" unique_id=313877286]
-offset_left = 48.0
-offset_top = 8.0
-offset_right = 103.0
-offset_bottom = 28.0
-theme_override_font_sizes/font_size = 14
-text = "Ronde 1"
+[node name="LimitScore" type="Label" parent="CanvasLayer" unique_id=854392388]
+offset_left = 92.0
+offset_top = 51.0
+offset_right = 127.0
+offset_bottom = 78.0
+theme_override_fonts/font = ExtResource("4_lquwl")
+theme_override_font_sizes/font_size = 20
+text = "100"
 
-[node name="BabakLabel" type="Label" parent="CanvasLayer" unique_id=377402244]
-offset_left = 110.0
-offset_top = 15.0
-offset_right = 172.0
-offset_bottom = 38.0
-text = "Babak 1"
-
-[node name="koin" type="Label" parent="CanvasLayer" unique_id=1785471678]
-offset_left = 361.0
-offset_top = 225.0
-offset_right = 401.0
-offset_bottom = 248.0
-theme_override_colors/font_color = Color(0.94509804, 0.8156863, 0.007843138, 1)
-text = "0"
-
-[node name="Poin" type="Label" parent="CanvasLayer" unique_id=1797979417]
+[node name="Base" type="Label" parent="CanvasLayer" unique_id=1797979417]
 offset_left = 102.0
 offset_top = 187.0
 offset_right = 108.0
@@ -80,14 +93,27 @@ offset_right = 109.0
 offset_bottom = 268.0
 text = "-"
 
-[node name="LimitScore" type="Label" parent="CanvasLayer" unique_id=854392388]
-offset_left = 92.0
-offset_top = 51.0
-offset_right = 127.0
-offset_bottom = 78.0
+[node name="GetKoin" type="Label" parent="CanvasLayer" unique_id=447873848]
+offset_left = 151.0
+offset_top = 21.0
+offset_right = 162.0
+offset_bottom = 33.0
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.94509804, 0.8156863, 0.007843138, 1)
 theme_override_fonts/font = ExtResource("4_lquwl")
-theme_override_font_sizes/font_size = 20
-text = "100"
+theme_override_font_sizes/font_size = 9
+text = "20"
+
+[node name="koin" type="Label" parent="CanvasLayer" unique_id=1785471678]
+offset_left = 357.0
+offset_top = 222.0
+offset_right = 392.0
+offset_bottom = 253.0
+size_flags_horizontal = 8
+theme_override_colors/font_color = Color(0.94509804, 0.8156863, 0.007843138, 1)
+theme_override_fonts/font = ExtResource("4_lquwl")
+theme_override_font_sizes/font_size = 23
+text = "80"
 
 [node name="NextPieceContainer" type="Node2D" parent="CanvasLayer" unique_id=1364226525]
 position = Vector2(338, 116)
