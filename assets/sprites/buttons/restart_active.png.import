@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://h2xjp7fb5dg7"
-path="res://.godot/imported/playButton-hovered.png-035c307da272977141ad82c7a7d83a17.ctex"
+uid="uid://cid1nje5iwha6"
+path="res://.godot/imported/restart_active.png-e10bf2d48e41156b4252aef856cc794f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/buttons/LongButton/playButton-hovered.png"
-dest_files=["res://.godot/imported/playButton-hovered.png-035c307da272977141ad82c7a7d83a17.ctex"]
+source_file="res://assets/sprites/buttons/restart_active.png"
+dest_files=["res://.godot/imported/restart_active.png-e10bf2d48e41156b4252aef856cc794f.ctex"]
 
 [params]
 
