@@ -20,8 +20,8 @@ func trigger_piece_landed(grid_data: Array, grid_nodes: Array, land_positions: A
 				pass
 
 # Kalkulasi Skor Dinamis berdasarkan ChipData
-# Ubah return type dari `-> int:` menjadi `-> float:`
-func calculate_final_score(base_score: int, group: Array, card_value: int, is_double: bool = false) -> float:
+# Ubah return type dari `-> float:` menjadi `-> Dictionary:`
+func calculate_final_score(base_score: int, group: Array, card_value: int, is_double: bool = false) -> Dictionary:
 	var total_flat: int = 0
 	var total_mult_plus: float = 0.0
 	var total_mult_times: float = 1.0
@@ -42,8 +42,11 @@ func calculate_final_score(base_score: int, group: Array, card_value: int, is_do
 	if effective_base == 0 and total_mult_plus > 0:
 		effective_base = 1
 
-	var multiplier = (1.0 + total_mult_plus) * total_mult_times
-	var result = (effective_base + total_flat) * multiplier
+	var multiplier: float = (1.0 + total_mult_plus) * total_mult_times
+	var result: float = (effective_base + total_flat) * multiplier
 
-	# Kembalikan murni nilai float tanpa dibulatkan ke int
-	return result
+	# Mengembalikan Dictionary berisi Skor Akhir dan Multiplier
+	return {
+		"skor_akhir": result,
+		"pengali": multiplier
+	}

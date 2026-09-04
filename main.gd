@@ -35,6 +35,11 @@ const FALL_STEP_DELAY := 0.15  # jeda tiap kartu turun 1 baris (detik), bisa dis
 @onready var resume: TextureButton = $Pause/CanvasLayer2/resume
 @onready var mainmenu: TextureButton = $Pause/CanvasLayer2/mainmenu
 
+@onready var audio_stream_player_2d: AudioStreamPlayer2D = $GameOverLayer/AudioStreamPlayer2D
+@onready var matcht: AudioStreamPlayer2D = $CanvasLayer/match
+@onready var combo: Label = $CanvasLayer/Combo
+
+
 
 
 @onready var koin_label: Label = $CanvasLayer/koin
@@ -91,9 +96,9 @@ func _ready() -> void:
 	update_koin_ui()
 	update_getkoin_ui()
 	# 1. Load Chip Zero
-	#var zero_chip = load("res://chip_power/chip_zero.tres")
-	#if zero_chip:
-		#chip_manager.add_chip(zero_chip)
+	var zero_chip = load("res://chip_power/chip_zero.tres")
+	if zero_chip:
+		chip_manager.add_chip(zero_chip)
 
 	# 2. Load Chip One
 	#var one_chip = load("res://chip_power/chip_balak.tres") # Sesuaikan nama file .tres kamu
@@ -301,6 +306,8 @@ func check_matches() -> bool:
 			var p2 = group[1]
 			if grid_partner[p1.y][p1.x] == p2:
 				continue
+				
+				
 
 		# --- 1. Tentukan Posisi Yang Akan Dihapus ---
 		var tiles_to_remove: Array[Vector2i] = []
@@ -351,13 +358,34 @@ func check_matches() -> bool:
 						is_double_match = true
 						break
 						
+					
 
 
-			# Hitung skor murni dari ChipManager dengan menyertakan status balak
-			var final_earned: float = chip_manager.calculate_final_score(total_base_earned, tiles_to_remove, domino_value, is_double_match)
+# 1. Panggil ChipManager (mengembalikan Dictionary)
+			var data_skor: Dictionary = chip_manager.calculate_final_score(total_base_earned, tiles_to_remove, domino_value, is_double_match)
 			
-			# Tambahkan LANGSUNG ke score
+			# 2. Ambil nilai skor akhir dan multiplier-nya
+			var final_earned: float = data_skor["skor_akhir"]
+			var nilai_pengali: float = data_skor["pengali"]
+			
+			# 3. Tambahkan ke skor game
 			score += final_earned
+			
+			# 4. Tampilkan angka pengali/bonus ke Label UI (opsional, sesuaikan nama node Label kamu)
+# Panggil fungsi auto-reset multiplier pada node combo
+			show_combo_multiplier(nilai_pengali)
+			
+			# ─── POHON AUDIO DI SINI ───
+			if is_blue_triggered:
+				# Putar suara ledakan khusus jika kartu biru aktif
+				$SuaraLedakanBiru.play() 
+			else:
+				# Putar suara match standar
+				matcht.play() 
+
+			for pos in tiles_to_remove:
+				remove_card(pos.y, pos.x)
+
 
 			for pos in tiles_to_remove:
 				remove_card(pos.y, pos.x)
@@ -368,7 +396,10 @@ func check_matches() -> bool:
 			print("DEBUG MATCH: Base=", total_base_earned, " | Is Double=", is_double_match, " | Final Earned=", final_earned, " | Score Sekarang=", score)
 			
 			show_base_earned(total_base_earned)
-			#update_base_label(total_base_earned)
+			update_base_label(total_base_earned)
+			
+	if found_match:
+		combo_multiplier += 1
 
 	return found_match
 ## --- 3. Hitung Total Skor & Kalkulasi Chip Seluruh Kartu Yang Hancur ---
@@ -558,6 +589,7 @@ func game_over() -> void:
 	set_process(false)
 	game_over_label.text = "Game Over\nSkor: " + str(score)
 	game_over_layer.visible = true
+	audio_stream_player_2d.play()
 
 func _on_restart_button_pressed() -> void:
 	restart_game()
@@ -848,3 +880,16 @@ func update_getkoin_ui() -> void:
 	if getkoin_label:
 		getkoin_label.text = "+" + str(get_round_koin_reward())
 		
+		
+# Fungsi untuk menampilkan multiplier di node Combo lalu meresetnya secara otomatis
+func show_combo_multiplier(mult_value: float) -> void:
+	if has_node("combo"):
+		# Hanya tampilkan jika pengali lebih besar dari 1.0 (misal: x1.5, x2.0)
+		if mult_value > 1.0:
+			$combo.text = "x" + str(snapped(mult_value, 0.01))
+			
+			# Tunggu 1 detik sebelum teks di-reset
+			await get_tree().create_timer(1.0).timeout
+			$combo.text = "" # Mengosongkan teks kembali
+		else:
+			$combo.text = ""
