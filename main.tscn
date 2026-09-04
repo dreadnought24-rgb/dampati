@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://dq7m1nqufhwva" path="res://assets/sprites/panels/pausePanel.png" id="4_2cqfq"]
 [ext_resource type="FontFile" uid="uid://b1l1gut62yqfc" path="res://assets/determination.ttf" id="4_lquwl"]
 [ext_resource type="Texture2D" uid="uid://d3wbi2e8lxvly" path="res://assets/sprites/panels/gameOver.png" id="5_dg77c"]
+[ext_resource type="AudioStream" uid="uid://bg466j61471yd" path="res://assets/music/WhatsApp Audio 2026-09-04 at 22.46.04.wav" id="5_getpj"]
 [ext_resource type="Texture2D" uid="uid://dcwra81mdla8i" path="res://assets/sprites/buttons/menu-active.png" id="6_ycdy4"]
 [ext_resource type="Texture2D" uid="uid://b2dp3qwrt3vcw" path="res://assets/sprites/buttons/menu-base.png" id="7_w48qg"]
 [ext_resource type="Texture2D" uid="uid://ddoof3e6hv6ks" path="res://assets/sprites/buttons/resume-active.png" id="8_cegan"]
@@ -16,6 +17,7 @@
 [ext_resource type="Texture2D" uid="uid://dj3nt52qucs0m" path="res://assets/sprites/buttons/resume-hovered.png" id="10_getpj"]
 [ext_resource type="Texture2D" uid="uid://bp1ig8ffbm8xb" path="res://assets/sprites/buttons/restart_base.png" id="10_ycdy4"]
 [ext_resource type="Texture2D" uid="uid://l1wg0dwntc37" path="res://assets/sprites/buttons/restart_hovered.png" id="11_w48qg"]
+[ext_resource type="AudioStream" uid="uid://ygvvb0rlr8ks" path="res://assets/music/sfx-gameover.wav" id="12_82xsv"]
 [ext_resource type="Texture2D" uid="uid://ct8odv007dj2h" path="res://assets/sprites/buttons/sprite_0.png" id="13_yaehf"]
 [ext_resource type="Texture2D" uid="uid://ba12f4jl1ht2q" path="res://assets/sprites/buttons/sprite_1.png" id="14_074og"]
 [ext_resource type="Texture2D" uid="uid://cyflqnylww401" path="res://assets/sprites/buttons/sprite_2.png" id="15_cegan"]
@@ -102,11 +104,16 @@ theme_override_fonts/font = ExtResource("4_lquwl")
 text = "0"
 
 [node name="Combo" type="Label" parent="CanvasLayer" unique_id=1690428435]
-offset_left = 103.0
-offset_top = 245.0
-offset_right = 109.0
-offset_bottom = 268.0
-text = "-"
+anchors_preset = -1
+offset_left = 89.0
+offset_top = 249.0
+offset_right = 130.0
+offset_bottom = 272.0
+theme_override_fonts/font = ExtResource("4_lquwl")
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
 
 [node name="GetKoin" type="Label" parent="CanvasLayer" unique_id=447873848]
 offset_left = 151.0
@@ -138,6 +145,9 @@ position = Vector2(338, 116)
 offset_top = -1.0
 offset_right = 32.0
 offset_bottom = 63.0
+
+[node name="match" type="AudioStreamPlayer2D" parent="CanvasLayer" unique_id=13410517]
+stream = ExtResource("5_getpj")
 
 [node name="GameOverLayer" type="CanvasLayer" parent="." unique_id=1253865483]
 visible = false
@@ -171,6 +181,9 @@ offset_top = 106.0
 offset_right = 305.0
 offset_bottom = 129.0
 text = "Game Over"
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="GameOverLayer" unique_id=1292003364]
+stream = ExtResource("12_82xsv")
 
 [node name="ChipManager" type="Node" parent="." unique_id=1717626266]
 script = ExtResource("4_1bvp3")
