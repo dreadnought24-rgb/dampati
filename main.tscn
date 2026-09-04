@@ -98,6 +98,7 @@ offset_left = 102.0
 offset_top = 187.0
 offset_right = 108.0
 offset_bottom = 210.0
+theme_override_fonts/font = ExtResource("4_lquwl")
 text = "0"
 
 [node name="Combo" type="Label" parent="CanvasLayer" unique_id=1690428435]
@@ -139,6 +140,7 @@ offset_right = 32.0
 offset_bottom = 63.0
 
 [node name="GameOverLayer" type="CanvasLayer" parent="." unique_id=1253865483]
+visible = false
 
 [node name="Sprite2D" type="Sprite2D" parent="GameOverLayer" unique_id=1157384195]
 position = Vector2(261, 148)

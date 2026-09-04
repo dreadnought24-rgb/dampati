@@ -368,7 +368,7 @@ func check_matches() -> bool:
 			print("DEBUG MATCH: Base=", total_base_earned, " | Is Double=", is_double_match, " | Final Earned=", final_earned, " | Score Sekarang=", score)
 			
 			show_base_earned(total_base_earned)
-			#update_base_label(total_base_earned)
+			update_base_label(total_base_earned)
 
 	return found_match
 ## --- 3. Hitung Total Skor & Kalkulasi Chip Seluruh Kartu Yang Hancur ---
