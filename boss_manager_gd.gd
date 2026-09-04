@@ -22,8 +22,6 @@ signal boss_cleared()
 func activate_random_boss() -> void:
 	var pool = [
 		BossType.GONDRONG,
-		BossType.YELLOW,
-		BossType.KADIV_KONSUM,
 	]
 	current_boss = pool[randi() % pool.size()]
 	print("BOSS AKTIF: ", BossType.keys()[current_boss])

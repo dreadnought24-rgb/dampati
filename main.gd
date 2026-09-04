@@ -71,14 +71,11 @@ var sisa_kartu: int = 28
 var base_reset_timer: SceneTreeTimer = null
 
 func _ready() -> void:
-	# taruh sementara di _ready() atau lewat tombol debug
-	boss_manager.current_boss = boss_manager.BossType.GONDRONG
-	update_boss_visuals()
-	gondrong_overlay.visible = true
-
 	# Sembunyikan CanvasLayer pause saat game baru mulai
 	if canvas_layer_2:
 		canvas_layer_2.hide()
+
+	# Hubungkan signal tombol secara aman (cegah error ...
 	
 	# Hubungkan signal tombol secara aman (cegah error 'already connected')
 	if pause_button and not pause_button.pressed.is_connected(_on_pause_button_pressed):
@@ -114,6 +111,8 @@ func _ready() -> void:
 	# 3. Tampilkan seluruh chip yang terpasang ke UI
 	render_chip_slots()
 	
+	reset_total_kartu()
+	render_chip_slots()
 	reset_total_kartu()
 	spawn_piece()
 
@@ -628,6 +627,7 @@ func restart_game() -> void:
 	set_process(true)
 	$Timer.start()
 	update_getkoin_ui()
+	update_boss_visuals()
 	spawn_piece()
 	boss_manager.clear_boss()
 
@@ -668,16 +668,10 @@ func get_round_score_limit() -> int:
 func advance_round() -> void:
 	print("Ronde lolos! Skor: ", score, " / Limit: ", get_round_score_limit())
 
-	# --- TAMBAHKAN KOIN DI SINI ---
 	var reward := get_round_koin_reward()
 	koin += reward
 	getkoin = reward
 	update_koin_ui()
-	print("Dapat koin: +", reward, " | Total koin: ", koin)
-	# ------------------------------
-
-	if is_boss_round():
-		print("[Placeholder] Ini seharusnya boss battle, tapi belum diimplementasi. Lanjut normal dulu.")
 
 	current_round += 1
 	if current_round > 4:
@@ -688,22 +682,26 @@ func advance_round() -> void:
 		win_all_stages()
 		return
 
+	# Aktifkan atau bersihkan boss di BossManager
 	if is_boss_round():
 		boss_manager.activate_random_boss()
-		update_boss_visuals()
 	else:
 		boss_manager.clear_boss()
+
+	# SELALU update tampilan visual boss (menampilkan di Ronde 4, menyembunyikan di Ronde 1-3)
+	update_boss_visuals()
 
 	for row in range(GRID_ROWS):
 		for col in range(GRID_COLS):
 			if grid_nodes[row][col] != null:
 				grid_nodes[row][col].queue_free()
+
 	init_grid_data()
 	build_deck()
 	update_round_label()
 	update_limit_score_ui()
 	reset_total_kartu()
-	update_getkoin_ui()  # update preview untuk ronde berikutnya
+	update_getkoin_ui()
 	spawn_piece()
 	
 	
@@ -893,17 +891,27 @@ func update_getkoin_ui() -> void:
 
 func update_boss_visuals() -> void:
 	var is_gondrong = boss_manager.is_active(boss_manager.BossType.GONDRONG)
-	print("update_boss_visuals dipanggil, is_gondrong=", is_gondrong)
 	gondrong_overlay.visible = is_gondrong
-	print("Boss aktif: ", boss_manager.BossType.keys()[boss_manager.current_boss])
+
 	if is_gondrong:
+		# 1. Buat layer visual di atas kartu domino
+		gondrong_overlay.z_index = 10
+		
+		# 2. Matikan mode centered agar anchor (0,0) berada di pojok kiri-atas sprite
+		gondrong_overlay.centered = false
+
+		# 3. Atur posisi ke Kiri-Atas Baris ke-5 (Index 4)
 		var top_left = grid_to_pixel(0, GONDRONG_START_ROW)
-		var row_count = GONDRONG_END_ROW - GONDRONG_START_ROW + 1
 		gondrong_overlay.position = top_left
 
+		# 4. Atur scaling sesuai ukuran arena (4 kolom x 4 baris)
+		var row_count = GONDRONG_END_ROW - GONDRONG_START_ROW + 1
 		var target_size = Vector2(GRID_COLS * CELL_SIZE, row_count * CELL_SIZE)
-		var frame_tex = gondrong_overlay.sprite_frames.get_frame_texture("grow", 0)
-		var frame_size = frame_tex.get_size()
-		gondrong_overlay.scale = target_size / frame_size
+
+		if gondrong_overlay.sprite_frames and gondrong_overlay.sprite_frames.has_animation("grow"):
+			var frame_tex = gondrong_overlay.sprite_frames.get_frame_texture("grow", 0)
+			if frame_tex:
+				var frame_size = frame_tex.get_size()
+				gondrong_overlay.scale = target_size / frame_size
 
 		gondrong_overlay.play("grow")

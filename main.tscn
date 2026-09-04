@@ -60,6 +60,12 @@ centered = false
 [node name="Timer" type="Timer" parent="." unique_id=2030278574]
 autostart = true
 
+[node name="GondrongOverlay" type="AnimatedSprite2D" parent="." unique_id=736780104]
+position = Vector2(260, 159)
+sprite_frames = SubResource("SpriteFrames_lvwo2")
+animation = &"grow"
+frame_progress = 0.5841333
+
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1855453903]
 
 [node name="ChipContainer" type="HBoxContainer" parent="CanvasLayer" unique_id=479271581]
@@ -246,12 +252,6 @@ offset_bottom = 201.0
 texture_normal = ExtResource("7_w48qg")
 texture_pressed = ExtResource("6_ycdy4")
 texture_hover = ExtResource("8_vivmo")
-
-[node name="GondrongOverlay" type="AnimatedSprite2D" parent="." unique_id=736780104]
-position = Vector2(260, 159)
-sprite_frames = SubResource("SpriteFrames_lvwo2")
-animation = &"grow"
-frame_progress = 0.3325652
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="pressed" from="GameOverLayer/Sprite2D/TextureButton" to="." method="_on_restart_button_pressed"]
