@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://crhk8mw5aeu4a"
-path="res://.godot/imported/nextRound-hovered.png-2321c150a024ff3caa019a89bd163f31.ctex"
+uid="uid://qsiusc6c1wwr"
+path="res://.godot/imported/nextRound-hovered.png-de6c333ca21748903352ae3eec217c22.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/buttons/LongButton/nextRound-hovered.png"
-dest_files=["res://.godot/imported/nextRound-hovered.png-2321c150a024ff3caa019a89bd163f31.ctex"]
+source_file="res://assets/sprites/buttons/nextRound-hovered.png"
+dest_files=["res://.godot/imported/nextRound-hovered.png-de6c333ca21748903352ae3eec217c22.ctex"]
 
 [params]
 

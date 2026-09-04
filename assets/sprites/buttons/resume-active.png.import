@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bajc3q3akk84x"
-path="res://.godot/imported/playButton-active.png-65bb392a5bd344bc7c9b676c4c00bbdd.ctex"
+uid="uid://ddoof3e6hv6ks"
+path="res://.godot/imported/resume-active.png-ea6cd15002ce7390015510e2c03e6940.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/buttons/LongButton/playButton-active.png"
-dest_files=["res://.godot/imported/playButton-active.png-65bb392a5bd344bc7c9b676c4c00bbdd.ctex"]
+source_file="res://assets/sprites/buttons/resume-active.png"
+dest_files=["res://.godot/imported/resume-active.png-ea6cd15002ce7390015510e2c03e6940.ctex"]
 
 [params]
 

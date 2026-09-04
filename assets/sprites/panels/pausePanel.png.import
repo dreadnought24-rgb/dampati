@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cfyt12qas8oxj"
-path="res://.godot/imported/nextRound-active.png-a22e9a322083ad8616f84bfa70197857.ctex"
+uid="uid://dq7m1nqufhwva"
+path="res://.godot/imported/pausePanel.png-73db9cc8bfc847c5220171210b2ad88f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/buttons/LongButton/nextRound-active.png"
-dest_files=["res://.godot/imported/nextRound-active.png-a22e9a322083ad8616f84bfa70197857.ctex"]
+source_file="res://assets/sprites/panels/pausePanel.png"
+dest_files=["res://.godot/imported/pausePanel.png-73db9cc8bfc847c5220171210b2ad88f.ctex"]
 
 [params]
 
