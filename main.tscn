@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://bnaqc13u4et41" path="res://assets/bg_file/ArenaBG (2).png" id="3_lquwl"]
 [ext_resource type="Script" uid="uid://ccula56edf35k" path="res://chip_manager.gd" id="4_1bvp3"]
 [ext_resource type="FontFile" uid="uid://b1l1gut62yqfc" path="res://assets/determination.ttf" id="4_lquwl"]
+[ext_resource type="Script" uid="uid://cbtpppm2ghu81" path="res://boss_manager_gd.gd" id="6_7mycd"]
 
 [node name="main" type="Node2D" unique_id=2117175078]
 script = ExtResource("1_ig7tw")
@@ -149,6 +150,11 @@ text = "Restart"
 
 [node name="ChipManager" type="Node" parent="." unique_id=1717626266]
 script = ExtResource("4_1bvp3")
+
+[node name="GondrongOverlay" type="Sprite2D" parent="." unique_id=708766010]
+
+[node name="BossManager" type="Node2D" parent="." unique_id=242705176]
+script = ExtResource("6_7mycd")
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="pressed" from="GameOverLayer/RestartButton" to="." method="_on_restart_button_pressed"]

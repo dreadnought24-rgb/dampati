@@ -29,6 +29,11 @@ const FALL_STEP_DELAY := 0.15  # jeda tiap kartu turun 1 baris (detik), bisa dis
 @onready var base_label: Label = $CanvasLayer/Base  # atau $Base sesuai nama node di Scene Tree
 @onready var koin_label: Label = $CanvasLayer/koin
 @onready var getkoin_label : Label = $CanvasLayer/GetKoin
+@onready var boss_manager: Node = $BossManager
+@onready var gondrong_overlay: Sprite2D = $GondrongOverlay
+
+const GONDRONG_START_ROW := 4  # baris ke-5 (0-indexed)
+const GONDRONG_END_ROW := 7    # baris ke-8 (0-indexed)
 
 var grid_data: Array = []
 var grid_nodes: Array = []
@@ -56,6 +61,7 @@ var sisa_kartu: int = 28
 var base_reset_timer: SceneTreeTimer = null
 
 func _ready() -> void:
+	gondrong_overlay.visible = false
 	randomize()
 	init_grid_data()
 	build_deck()
@@ -83,6 +89,7 @@ func _ready() -> void:
 	spawn_piece()
 
 func init_grid_data() -> void:
+	boss_manager.init_hand_age(GRID_ROWS, GRID_COLS)
 	grid_data.clear()
 	grid_nodes.clear()
 	grid_partner.clear()
@@ -223,10 +230,16 @@ func hard_drop() -> void:
 
 func land_piece() -> void:
 	combo_multiplier = 1
-	
+
 	var cell_b = get_cell_b_pos(current_col, current_row, current_offset)
 	var value_a = current_piece.value_a
 	var value_b = current_piece.value_b
+
+	# Simpan posisi mendarat SEBELUM current_col/current_row berubah lagi
+	var land_positions: Array[Vector2i] = [
+		Vector2i(current_col, current_row),
+		cell_b
+	]
 
 	current_piece.queue_free()
 	current_piece = null
@@ -234,16 +247,24 @@ func land_piece() -> void:
 	place_card(current_row, current_col, value_a, cell_b)
 	place_card(cell_b.y, cell_b.x, value_b, Vector2i(current_col, current_row))
 
-	var land_positions: Array[Vector2i] = [
-		Vector2i(current_col, current_row),
-		cell_b
-	]
+	# Trigger efek chip di posisi yang benar-benar baru mendarat
 	chip_manager.trigger_piece_landed(grid_data, grid_nodes, land_positions)
 
 	await apply_free_fall()
 	while check_matches():
 		await apply_free_fall()
 
+	# Efek boss KADIV_KONSUM (kartu expired karena usia)
+	if boss_manager.is_active(boss_manager.BossType.KADIV_KONSUM):
+		var expired = boss_manager.tick_and_get_expired(grid_data, GRID_ROWS, GRID_COLS)
+		for pos in expired:
+			remove_card(pos.y, pos.x)
+		if expired.size() > 0:
+			await apply_free_fall()
+			while check_matches():
+				await apply_free_fall()
+
+	# Hanya SATU kali spawn_piece() di akhir
 	spawn_piece()
 
 func place_card(row: int, col: int, value: int, partner_pos: Vector2i = NO_PARTNER) -> void:
@@ -254,6 +275,8 @@ func place_card(row: int, col: int, value: int, partner_pos: Vector2i = NO_PARTN
 	grid_data[row][col] = value
 	grid_nodes[row][col] = card
 	grid_partner[row][col] = partner_pos
+	boss_manager.reset_age(row, col)
+	
 
 func check_matches() -> bool:
 	var visited := {}
@@ -393,13 +416,18 @@ func flood_fill(start: Vector2i, value: int, visited: Dictionary) -> Array:
 
 	while stack.size() > 0:
 		var pos = stack.pop_back()
-
 		if visited.has(pos):
 			continue
 		if pos.x < 0 or pos.x >= GRID_COLS or pos.y < 0 or pos.y >= GRID_ROWS:
 			continue
 		if grid_data[pos.y][pos.x] != value:
 			continue
+
+		# --- THE YELLOW: kartu kuning tidak ikut grup ---
+		if boss_manager.is_active(boss_manager.BossType.YELLOW):
+			var node = grid_nodes[pos.y][pos.x]
+			if node != null and "card_color_type" in node and node.card_color_type == "yellow":
+				continue
 
 		visited[pos] = true
 		group.append(pos)
@@ -572,6 +600,7 @@ func restart_game() -> void:
 	$Timer.start()
 	update_getkoin_ui()
 	spawn_piece()
+	boss_manager.clear_boss()
 
 #func _draw() -> void:
 	#var spawn_color = Color(0.2, 0.2, 0.4, 0.5)
@@ -629,6 +658,12 @@ func advance_round() -> void:
 	if current_stage > 6:
 		win_all_stages()
 		return
+
+	if is_boss_round():
+		boss_manager.activate_random_boss()
+		update_boss_visuals()
+	else:
+		boss_manager.clear_boss()
 
 	for row in range(GRID_ROWS):
 		for col in range(GRID_COLS):
@@ -784,8 +819,10 @@ const ROUND_KOIN_REWARDS := [3, 5, 7, 10]
 
 # Menghitung berapa koin yang akan didapat jika menang ronde SAAT INI
 func get_round_koin_reward() -> int:
+	if boss_manager.is_active(boss_manager.BossType.YELLOW):
+		return 0
 	var base_reward: int = ROUND_KOIN_REWARDS[current_round - 1]
-	var bonus: int = int(koin / 5)  # setiap 5 koin yang dimiliki, +1 gold bonus
+	var bonus: int = int(koin / 5)
 	return base_reward + bonus
 
 func update_koin_ui() -> void:
@@ -796,3 +833,13 @@ func update_getkoin_ui() -> void:
 	if getkoin_label:
 		getkoin_label.text = "+" + str(get_round_koin_reward())
 		
+
+func update_boss_visuals() -> void:
+	var is_gondrong = boss_manager.is_active(boss_manager.BossType.GONDRONG)
+	gondrong_overlay.visible = is_gondrong
+	if is_gondrong:
+		var top_left = grid_to_pixel(0, GONDRONG_START_ROW)
+		var row_count = GONDRONG_END_ROW - GONDRONG_START_ROW + 1
+		gondrong_overlay.position = top_left
+		gondrong_overlay.size = Vector2(GRID_COLS * CELL_SIZE, row_count * CELL_SIZE)
+		gondrong_overlay.color = Color(0.05, 0.03, 0.02, 0.95)  # nyaris hitam pekat, "rambut"
