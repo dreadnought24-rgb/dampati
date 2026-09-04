@@ -894,24 +894,21 @@ func update_boss_visuals() -> void:
 	gondrong_overlay.visible = is_gondrong
 
 	if is_gondrong:
-		# 1. Buat layer visual di atas kartu domino
+		# 1. z_index tinggi agar rambut berada DI ATAS kartu domino (menutupi kartu)
 		gondrong_overlay.z_index = 10
-		
-		# 2. Matikan mode centered agar anchor (0,0) berada di pojok kiri-atas sprite
-		gondrong_overlay.centered = false
 
-		# 3. Atur posisi ke Kiri-Atas Baris ke-5 (Index 4)
-		var top_left = grid_to_pixel(0, GONDRONG_START_ROW)
-		gondrong_overlay.position = top_left
+		# 2. Kembalikan ke skala asli (1, 1) agar gambarnya tidak terciut/mengecil
+		gondrong_overlay.scale = Vector2(1, 1)
 
-		# 4. Atur scaling sesuai ukuran arena (4 kolom x 4 baris)
+		# 3. Aktifkan centered agar titik tumpu sprite berada di tengah gambar
+		gondrong_overlay.centered = true
+
+		# 4. Hitung titik tengah area baris ke-5 sampai ke-8 (index 4 sampai 7)
+		var center_x = 192 + (GRID_COLS * CELL_SIZE) / 2.0  # Titik tengah horisontal grid (X = 256)
 		var row_count = GONDRONG_END_ROW - GONDRONG_START_ROW + 1
-		var target_size = Vector2(GRID_COLS * CELL_SIZE, row_count * CELL_SIZE)
+		var center_y = 32 + (GONDRONG_START_ROW * CELL_SIZE) + (row_count * CELL_SIZE) / 2.0 # Titik tengah vertikal baris 5-8 (Y = 224)
 
-		if gondrong_overlay.sprite_frames and gondrong_overlay.sprite_frames.has_animation("grow"):
-			var frame_tex = gondrong_overlay.sprite_frames.get_frame_texture("grow", 0)
-			if frame_tex:
-				var frame_size = frame_tex.get_size()
-				gondrong_overlay.scale = target_size / frame_size
+		gondrong_overlay.position = Vector2(center_x, center_y)
 
+		# 5. Jalankan animasi
 		gondrong_overlay.play("grow")

@@ -64,7 +64,7 @@ autostart = true
 position = Vector2(260, 159)
 sprite_frames = SubResource("SpriteFrames_lvwo2")
 animation = &"grow"
-frame_progress = 0.5841333
+frame_progress = 0.069047876
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1855453903]
 
